@@ -48,7 +48,7 @@ function Index() {
       {/* Homepage Content wrapper revealed by clip-path mask */}
       <div
         ref={pageRef}
-        className="noise relative size-full opacity-0"
+        className={introActive ? "noise relative size-full opacity-0" : "noise relative size-full"}
       >
         <ScrollProgress />
         <main>
