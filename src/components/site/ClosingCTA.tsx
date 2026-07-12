@@ -24,19 +24,19 @@ export function ClosingCTA() {
             <br /> unforgettable.
           </h2>
           <p className="relative mx-auto mt-6 max-w-xl text-[15px] text-primary-foreground/70">
-            We take on a small number of projects each quarter so every story
-            gets the time it deserves. Tell us about yours.
+            I take on a small number of projects each quarter so every story
+            gets the attention it deserves. Share your vision, and let's talk about bringing it to life.
           </p>
           <div className="relative mt-10 flex flex-wrap justify-center gap-3">
             <a
               href="#contact"
-              className="rounded-full bg-primary-foreground px-7 py-3.5 text-[14px] font-medium text-foreground transition hover:opacity-90"
+              className="btn-premium bg-primary-foreground px-7 py-3.5 text-[14px] font-medium text-foreground"
             >
               Book a call
             </a>
             <a
               href="#contact"
-              className="rounded-full border border-primary-foreground/25 px-7 py-3.5 text-[14px] font-medium text-primary-foreground transition hover:bg-primary-foreground/10"
+              className="btn-premium border border-primary-foreground/25 px-7 py-3.5 text-[14px] font-medium text-primary-foreground"
             >
               Start a project
             </a>

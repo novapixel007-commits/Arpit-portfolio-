@@ -4,8 +4,8 @@ import { useEffect, useRef } from "react";
 const STATS = [
   { value: 100, suffix: "+", label: "Projects delivered" },
   { value: 20, suffix: "+", label: "Brand partners" },
-  { value: 4, suffix: " yrs", label: "Crafting visuals" },
-  { value: 38, suffix: "M+", label: "Combined views" },
+  { value: 2, suffix: " yrs", label: "Crafting visuals" },
+  { value: 100, suffix: "+", label: "Videos Edited" },
 ];
 
 const LOGOS = ["AETHER", "NORTHSTAR", "LUMEN", "OCTAVE", "PARALLEL", "MERIDIAN", "OBSCURA"];

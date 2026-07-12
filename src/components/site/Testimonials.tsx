@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import { useState } from "react";
+import { CinematicHeading } from "./CinematicHeading";
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
 
 const ITEMS = [
@@ -31,13 +32,10 @@ export function Testimonials() {
     <section className="relative mt-32 md:mt-48">
       <div className="container-px mx-auto max-w-6xl">
         <div className="flex items-end justify-between gap-6">
-          <div className="max-w-2xl">
-            <p className="eyebrow">Kind words</p>
-            <h2 className="mt-4 heading-display text-balance text-4xl md:text-6xl">
-              From the founders
-              <br className="hidden md:block" /> we work with.
-            </h2>
-          </div>
+            <CinematicHeading 
+              tagline="Kind words" 
+              text="From the founders we work with." 
+            />
           <div className="flex items-center gap-2">
             <button
               aria-label="Previous testimonial"

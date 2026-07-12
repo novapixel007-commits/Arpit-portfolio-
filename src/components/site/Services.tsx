@@ -1,76 +1,174 @@
 import { motion } from "motion/react";
+import { useState } from "react";
+import { CinematicHeading } from "./CinematicHeading";
 import {
   Film,
   Sparkles,
-  Wand2,
-  MonitorPlay,
-  Bot,
-  PlayCircle,
-  Package,
-  Youtube,
-  Instagram,
   Scissors,
+  Wand2,
+  Package,
+  Palette,
 } from "lucide-react";
 
 const SERVICES = [
-  { icon: Film, title: "Commercial ads", desc: "Cinematic spots for brands that need to feel premium from the first frame." },
-  { icon: Scissors, title: "Video editing", desc: "Story-first editorial that holds attention and serves the message." },
-  { icon: Sparkles, title: "Motion design", desc: "Custom animation systems with intent and rhythm — never templated." },
-  { icon: Wand2, title: "Brand videos", desc: "Films that translate values into atmosphere, pace and tone." },
-  { icon: Bot, title: "AI content", desc: "Generative and hybrid pipelines used with restraint and craft." },
-  { icon: PlayCircle, title: "Explainer videos", desc: "Clear product narratives for SaaS and technical audiences." },
-  { icon: Package, title: "Product videos", desc: "Studio-grade product films and 3D-inspired motion." },
-  { icon: Youtube, title: "YouTube editing", desc: "High-retention editing for founders and creators." },
-  { icon: Instagram, title: "Instagram reels", desc: "Short-form built to feel like a campaign, not content slop." },
-  { icon: MonitorPlay, title: "UI animations", desc: "Interface motion and prototypes that ship to product." },
+  {
+    icon: Scissors,
+    number: "01",
+    title: "Talking Head Editing",
+    desc: "Polished, story-first cuts tailored for maximum retention, pacing and conversational flow.",
+    tags: ["DaVinci Resolve", "Flow", "Retention"],
+  },
+  {
+    icon: Sparkles,
+    number: "02",
+    title: "Motion Graphics",
+    desc: "Bespoke 2D/3D motion designs and interface walkthroughs built entirely in Fusion.",
+    tags: ["DaVinci Fusion", "3D Nodes", "TACTILE"],
+  },
+  {
+    icon: Film,
+    number: "03",
+    title: "Commercial Ads",
+    desc: "High-end commercial and product editing crafted to capture brand aesthetics.",
+    tags: ["Commercial", "Advertising", "Rhythm"],
+  },
+  {
+    icon: Wand2,
+    number: "04",
+    title: "Brand Films",
+    desc: "Cinematic, narrative-driven editing that communicates core founder and agency values.",
+    tags: ["Storytelling", "Color Finish", "Audio"],
+  },
+  {
+    icon: Package,
+    number: "05",
+    title: "Product Videos",
+    desc: "Refined showcase videos combining clean macro tracking edits with kinetic motion.",
+    tags: ["Product Spot", "Motion", "Timing"],
+  },
+  {
+    icon: Palette,
+    number: "06",
+    title: "Color Grading",
+    desc: "Professional color finishing, scene matching, and custom film print emulation.",
+    tags: ["Color LUTs", "Grading Node", "HDR"],
+  },
 ];
 
-export function Services() {
+interface ServiceCardProps {
+  service: (typeof SERVICES)[0];
+  index: number;
+}
+
+function ServiceCard({ service, index }: ServiceCardProps) {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isHovering, setIsHovering] = useState(false);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setMousePosition({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    });
+  };
+
   return (
-    <section id="services" className="relative mt-32 scroll-mt-24 md:mt-48">
-      <div className="container-px mx-auto max-w-7xl">
-        <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
-          <div className="max-w-2xl">
-            <p className="eyebrow">What we craft</p>
-            <h2 className="mt-4 heading-display text-balance text-4xl md:text-6xl">
-              A studio practice,
-              <br className="hidden md:block" /> not a service menu.
-            </h2>
+    <motion.div
+      initial={{ opacity: 0, y: 24, filter: "blur(6px)" }}
+      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{
+        duration: 0.8,
+        delay: index * 0.06,
+        ease: [0.16, 1, 0.3, 1],
+      }}
+      whileHover={{
+        y: -6,
+        transition: { duration: 0.3, ease: "easeOut" },
+      }}
+      className="group relative h-full rounded-[2rem] p-[1.5px] overflow-hidden bg-border transition-all duration-300"
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+      style={{
+        background: isHovering 
+          ? `radial-gradient(circle 120px at ${mousePosition.x}px ${mousePosition.y}px, #6EE7FF 0%, #8B7CFF 50%, rgba(255,255,255,0.08) 100%)`
+          : "rgba(255, 255, 255, 0.08)",
+      }}
+    >
+      <div className="relative h-full rounded-[2rem] bg-card p-8 flex flex-col justify-between overflow-hidden">
+        {/* Spotlight coordinates highlight */}
+        {isHovering && (
+          <div
+            className="pointer-events-none absolute inset-0 transition-opacity duration-300 opacity-100"
+            style={{
+              background: `radial-gradient(circle 150px at ${mousePosition.x}px ${mousePosition.y}px, rgba(110, 231, 255, 0.08) 0%, rgba(139, 124, 255, 0.03) 50%, transparent 100%)`,
+            }}
+          />
+        )}
+
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8 relative z-10">
+          {/* Icon container */}
+          <div className="relative size-12 rounded-xl bg-surface border border-border flex items-center justify-center text-[#6EE7FF] group-hover:text-[#8B7CFF] transition-colors duration-300">
+            <service.icon className="size-5" strokeWidth={1.5} />
           </div>
-          <p className="max-w-md text-[15px] text-muted-foreground">
-            Each engagement is treated like a small film production — strategy,
-            craft and finish. Here's the range.
+
+          {/* Index Number */}
+          <span className="font-mono text-[10px] tracking-wider text-muted-foreground">
+            {service.number}
+          </span>
+        </div>
+
+        {/* Content */}
+        <div className="text-left relative z-10">
+          <h3 className="font-display text-xl font-medium tracking-tight text-foreground mb-3 transition-colors duration-300 group-hover:text-[#6EE7FF]">
+            {service.title}
+          </h3>
+          <p className="text-[13.5px] leading-relaxed text-muted-foreground mb-6">
+            {service.desc}
           </p>
         </div>
 
-        <div className="mt-14 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {SERVICES.map((s, i) => (
-            <motion.div
-              key={s.title}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.6, delay: (i % 3) * 0.05, ease: [0.22, 1, 0.36, 1] }}
-              whileHover={{ y: -4 }}
-              className="group rounded-3xl hairline bg-surface p-7 transition-shadow duration-500 hover:shadow-float"
+        {/* Tags */}
+        <div className="flex flex-wrap gap-2 mt-auto relative z-10">
+          {service.tags.map((tag) => (
+            <span
+              key={tag}
+              className="inline-flex px-2.5 py-0.5 rounded-full border border-border bg-surface/50 text-[10px] uppercase tracking-widest text-muted-foreground font-mono transition-colors group-hover:border-[#6EE7FF]/30 group-hover:text-foreground"
             >
-              <div className="flex items-center justify-between">
-                <div className="grid size-11 place-items-center rounded-2xl bg-surface-2 text-foreground transition-colors duration-500 group-hover:bg-foreground group-hover:text-primary-foreground">
-                  <s.icon className="size-5" strokeWidth={1.5} />
-                </div>
-                <span className="font-mono text-[11px] text-muted-foreground">
-                  0{i + 1}
-                </span>
-              </div>
-              <h3 className="mt-7 font-display text-[19px] font-medium tracking-tight">
-                {s.title}
-              </h3>
-              <p className="mt-2 text-[14px] leading-relaxed text-muted-foreground">
-                {s.desc}
-              </p>
-            </motion.div>
+              {tag}
+            </span>
           ))}
         </div>
+      </div>
+    </motion.div>
+  );
+}
+
+export function Services() {
+  return (
+    <section id="services" className="relative mt-24 py-16 scroll-mt-24 md:mt-36">
+      <div className="container-px mx-auto max-w-7xl">
+        
+        {/* Section Header */}
+        <div className="flex flex-col items-start justify-between gap-8 border-b border-border pb-12 mb-16 md:flex-row md:items-end">
+            <CinematicHeading 
+              tagline="capabilities" 
+              text="focused workflows, premium results." 
+            />
+          <p className="text-[15px] leading-relaxed text-muted-foreground max-w-sm md:ml-auto text-left">
+            No bloated studio structures. Directly partnering with creators, agencies and brands using standard finishing technologies inside Resolve.
+          </p>
+        </div>
+
+        {/* Services Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {SERVICES.map((service, index) => (
+            <ServiceCard key={service.number} service={service} index={index} />
+          ))}
+        </div>
+
       </div>
     </section>
   );

@@ -5,7 +5,7 @@ export function Footer() {
         <div className="flex items-center gap-2">
           <span className="inline-block size-2 rounded-full bg-foreground" />
           <span className="font-display text-[15px] font-semibold tracking-tight">
-            Vision<span className="text-muted-foreground">.studio</span>
+            ARPIT SHARMA
           </span>
         </div>
 
@@ -16,16 +16,10 @@ export function Footer() {
           <a href="#about" className="hover:text-foreground">About</a>
           <a href="#contact" className="hover:text-foreground">Contact</a>
         </nav>
-
-        <div className="flex items-center gap-5 text-[13px] text-muted-foreground">
-          <a href="#" className="hover:text-foreground">Instagram</a>
-          <a href="#" className="hover:text-foreground">Vimeo</a>
-          <a href="#" className="hover:text-foreground">LinkedIn</a>
-        </div>
       </div>
       <div className="container-px mx-auto flex max-w-7xl items-center justify-between border-t border-hairline py-6 text-[12px] text-muted-foreground">
-        <span>© {new Date().getFullYear()} Vision Studio. All rights reserved.</span>
-        <span className="font-mono">v1.0 — Lisbon / Berlin</span>
+        <span>© 2026 ARPIT SHARMA</span>
+        <span className="font-mono">Crafted with precision.</span>
       </div>
     </footer>
   );

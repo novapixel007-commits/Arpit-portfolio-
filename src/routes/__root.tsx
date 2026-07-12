@@ -11,6 +11,11 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { CustomCursor } from "@/components/site/CustomCursor";
+import { GlobalBackground } from "@/components/site/GlobalBackground";
+import { Navbar } from "@/components/site/Navbar";
+import { Toaster } from "@/components/ui/sonner";
+import Lenis from "lenis";
 
 function NotFoundComponent() {
   return (
@@ -76,23 +81,23 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { name: "theme-color", content: "#FAFAFA" },
-      { title: "Vision Studio — Cinematic Video Editing & Motion Design" },
+      { title: "Arpit Sharma — Cinematic Video Editing & Motion Design" },
       {
         name: "description",
         content:
-          "An independent creative studio crafting commercials, brand films, motion design and product videos for ambitious tech brands and founders.",
+          "Premium video editing and motion design for creators, startups and modern brands. DaVinci Resolve specialist.",
       },
-      { name: "author", content: "Vision Studio" },
-      { property: "og:site_name", content: "Vision Studio" },
+      { name: "author", content: "Arpit Sharma" },
+      { property: "og:site_name", content: "Arpit Sharma" },
       { property: "og:type", content: "website" },
-      { property: "og:title", content: "Vision Studio — Cinematic Video Editing & Motion Design" },
+      { property: "og:title", content: "Arpit Sharma — Cinematic Video Editing & Motion Design" },
       {
         property: "og:description",
         content:
           "An independent creative studio crafting commercials, brand films, motion design and product videos.",
       },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Vision Studio — Cinematic Video Editing & Motion Design" },
+      { name: "twitter:title", content: "Arpit Sharma — Cinematic Video Editing & Motion Design" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -115,6 +120,29 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  // Permanently dark — no theme toggle
+                  document.documentElement.classList.add('dark');
+                  document.documentElement.classList.remove('light');
+                  localStorage.setItem('theme', 'dark');
+
+                  // Prevent flashes of the cinematic intro screen on repeat visits
+                  if (localStorage.getItem('portfolio_intro_seen') === 'true') {
+                    var style = document.createElement('style');
+                    style.innerHTML = '#ssr-overlay { display: none !important; }';
+                    document.head.appendChild(style);
+                  }
+                } catch (e) {
+                  document.documentElement.classList.add('dark');
+                }
+              })();
+            `,
+          }}
+        />
       </head>
       <body>
         {children}
@@ -127,9 +155,36 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      wheelMultiplier: 1.0,
+      touchMultiplier: 1.5,
+    });
+
+    const raf = (time: number) => {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    };
+
+    requestAnimationFrame(raf);
+
+    return () => {
+      lenis.destroy();
+    };
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
+      <GlobalBackground />
+      <Navbar />
+      <CustomCursor />
       <Outlet />
+      <Toaster position="bottom-right" richColors />
     </QueryClientProvider>
   );
 }

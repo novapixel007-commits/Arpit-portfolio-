@@ -54,84 +54,144 @@
 :root {
   --radius: 1rem;
 
-  --background: oklch(0.985 0 0);          /* #FAFAFA */
-  --foreground: oklch(0.18 0.005 270);     /* #111111 */
-  --surface: oklch(1 0 0);                 /* #FFFFFF */
-  --surface-2: oklch(0.972 0 0);           /* #F7F7F7 */
+  /* Light Theme (Default) */
+  --background: #F8F7F4;
+  --foreground: #1A1A19;
+  --surface: #EFECE6;
+  --surface-2: #EAE6DD;
 
-  --card: oklch(1 0 0);
+  --card: #FFFDF9;
   --card-foreground: var(--foreground);
-  --popover: oklch(1 0 0);
+  --popover: #FFFDF9;
   --popover-foreground: var(--foreground);
 
-  --primary: oklch(0.18 0.005 270);        /* near-black */
-  --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.972 0 0);
+  --primary: #1A1A19;
+  --primary-foreground: #F8F7F4;
+  --secondary: #EFECE6;
   --secondary-foreground: var(--foreground);
-  --muted: oklch(0.96 0 0);
-  --muted-foreground: oklch(0.5 0.005 270); /* ~#666 */
-  --accent: oklch(0.62 0.12 250);          /* soft blue, use sparingly */
-  --accent-foreground: oklch(0.99 0 0);
+  --muted: #EFECE6;
+  --muted-foreground: #605E5A;
+  --accent: #0284C7;                   /* Deep Electric Blue */
+  --accent-secondary: #7C3AED;         /* Deep Soft Purple */
+  --accent-foreground: #FFFDF9;
+
+  --bg-glow-1: rgba(2, 132, 199, 0.06);
+  --bg-glow-2: rgba(124, 58, 237, 0.05);
 
   --destructive: oklch(0.55 0.2 25);
   --destructive-foreground: oklch(0.99 0 0);
 
-  --hairline: oklch(0.92 0 0);
-  --border: oklch(0.93 0 0);
-  --border-strong: oklch(0.85 0 0);
-  --input: oklch(0.92 0 0);
-  --ring: oklch(0.7 0.02 270);
+  --hairline: rgba(0, 0, 0, 0.04);
+  --border: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.15);
+  --input: rgba(0, 0, 0, 0.08);
+  --ring: #0284C7;
 
-  --chart-1: oklch(0.6 0.05 250);
-  --chart-2: oklch(0.7 0.03 200);
+  --chart-1: #0284C7;
+  --chart-2: #7C3AED;
   --chart-3: oklch(0.5 0.02 280);
   --chart-4: oklch(0.8 0.02 80);
   --chart-5: oklch(0.4 0.02 250);
 
-  --sidebar: oklch(0.99 0 0);
+  --sidebar: #FFFDF9;
   --sidebar-foreground: var(--foreground);
   --sidebar-primary: var(--primary);
-  --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.96 0 0);
+  --sidebar-primary-foreground: #FFFDF9;
+  --sidebar-accent: #EFECE6;
+  --sidebar-accent-foreground: var(--foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
+
+  /* Cursor custom styling variables */
+  --cursor-border: rgba(0, 0, 0, 0.15);
+  --cursor-bg: rgba(0, 0, 0, 0.03);
+  --cursor-dot: #1A1A19;
+}
+
+.dark {
+  --background: #0A0A0A;
+  --foreground: #F7F7F7;
+  --surface: #111111;
+  --surface-2: #141414;
+
+  --card: #181818;
+  --card-foreground: #F7F7F7;
+  --popover: #181818;
+  --popover-foreground: #F7F7F7;
+
+  /* Cursor custom styling variables */
+  --cursor-border: rgba(255, 255, 255, 0.25);
+  --cursor-bg: rgba(255, 255, 255, 0.04);
+  --cursor-dot: #FFFFFF;
+
+  --primary: #F7F7F7;
+  --primary-foreground: #0A0A0A;
+  --secondary: #111111;
+  --secondary-foreground: #F7F7F7;
+  --muted: #181818;
+  --muted-foreground: #A1A1AA;
+  --accent: #6EE7FF;                   /* Warm Electric Blue */
+  --accent-secondary: #8B7CFF;         /* Soft Purple */
+  --accent-foreground: #0A0A0A;
+
+  --bg-glow-1: rgba(110, 231, 255, 0.08);
+  --bg-glow-2: rgba(139, 124, 255, 0.06);
+
+  --hairline: rgba(255, 255, 255, 0.05);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.15);
+  --input: rgba(255, 255, 255, 0.08);
+  --ring: #6EE7FF;
+
+  --chart-1: #6EE7FF;
+  --chart-2: #8B7CFF;
+
+  --sidebar: #181818;
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: #0A0A0A;
+  --sidebar-accent: #111111;
   --sidebar-accent-foreground: var(--foreground);
   --sidebar-border: var(--border);
   --sidebar-ring: var(--ring);
 }
 
-.dark {
-  --background: oklch(0.14 0.005 270);
-  --foreground: oklch(0.98 0 0);
-  --surface: oklch(0.18 0.005 270);
-  --surface-2: oklch(0.22 0.005 270);
-  --card: oklch(0.18 0.005 270);
-  --card-foreground: oklch(0.98 0 0);
-  --popover: oklch(0.18 0.005 270);
-  --popover-foreground: oklch(0.98 0 0);
-  --primary: oklch(0.98 0 0);
-  --primary-foreground: oklch(0.14 0.005 270);
-  --secondary: oklch(0.22 0.005 270);
-  --secondary-foreground: oklch(0.98 0 0);
-  --muted: oklch(0.22 0.005 270);
-  --muted-foreground: oklch(0.7 0.005 270);
-  --accent: oklch(0.7 0.12 250);
-  --accent-foreground: oklch(0.14 0.005 270);
-  --hairline: oklch(1 0 0 / 0.08);
-  --border: oklch(1 0 0 / 0.1);
-  --border-strong: oklch(1 0 0 / 0.2);
-  --input: oklch(1 0 0 / 0.15);
-  --ring: oklch(0.6 0.02 270);
+/* Lenis smooth scrolling base configs */
+html.lenis, html.lenis body {
+  height: auto;
+}
+.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis-stopped {
+  overflow: hidden;
+}
+.lenis-scrolling iframe {
+  pointer-events: none;
 }
 
 @layer base {
   * {
     border-color: var(--color-border);
   }
+  html, body, header, section, footer, div, p, h1, h2, h3, h4, span, button, input, textarea, a {
+    transition: background-color 500ms cubic-bezier(0.4, 0, 0.2, 1), 
+                border-color 500ms cubic-bezier(0.4, 0, 0.2, 1), 
+                color 500ms cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 500ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .no-transition, .custom-cursor, .custom-cursor *, canvas, video, canvas *, video * {
+    transition: none !important;
+  }
   html {
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
   body {
-    background-color: var(--color-background);
+    background-color: transparent;
     color: var(--color-foreground);
     font-family: var(--font-sans);
     font-feature-settings: "ss01", "cv11";
@@ -166,15 +226,15 @@
 }
 
 @utility glass {
-  background: color-mix(in oklab, white 70%, transparent);
+  background: color-mix(in oklab, var(--color-card) 70%, transparent);
   backdrop-filter: blur(20px) saturate(160%);
-  border: 1px solid color-mix(in oklab, white 60%, transparent);
+  border: 1px solid color-mix(in oklab, var(--color-border) 50%, transparent);
 }
 
 @utility glass-strong {
-  background: color-mix(in oklab, white 82%, transparent);
+  background: color-mix(in oklab, var(--color-card) 85%, transparent);
   backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid color-mix(in oklab, white 70%, transparent);
+  border: 1px solid color-mix(in oklab, var(--color-border) 60%, transparent);
 }
 
 @utility text-balance {
@@ -200,4 +260,86 @@
   letter-spacing: 0.18em;
   font-weight: 500;
   color: var(--color-muted-foreground);
+}
+
+/* ---------------------------------------------------------------
+ * Premium Apple VisionOS Liquid Glass Navbar
+ * --------------------------------------------------------------- */
+
+@supports (backdrop-filter: blur(1px)) {
+  header {
+    will-change: transform;
+  }
+}
+
+/* Performance optimizations */
+@layer components {
+  .navbar-glass-base {
+    @apply will-change-transform;
+  }
+
+  .navbar-smooth {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .nav-link-active {
+    @apply relative text-foreground;
+  }
+
+  .nav-link-hover {
+    @apply relative transition-colors duration-200;
+  }
+
+  /* Radial gradient for spotlight effect */
+  .bg-gradient-radial {
+    background-image: radial-gradient(circle at center, var(--tw-gradient-stops));
+  }
+
+  /* Premium Unified Button Style */
+  .btn-premium {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    overflow: hidden;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), 
+                box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+                background-color 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+                border-color 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+                color 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform, box-shadow;
+  }
+
+  .btn-premium::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.12) 50%,
+      transparent 100%
+    );
+    transform: skewX(-25deg);
+    transition: none;
+    pointer-events: none;
+  }
+
+  .btn-premium:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 10px 25px -10px rgba(0, 0, 0, 0.15);
+  }
+
+  .btn-premium:hover::before {
+    animation: btn-shine 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+}
+
+@keyframes btn-shine {
+  0% { left: -150%; }
+  100% { left: 150%; }
 }

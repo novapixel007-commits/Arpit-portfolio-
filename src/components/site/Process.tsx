@@ -1,8 +1,9 @@
 import { motion, useScroll, useTransform } from "motion/react";
 import { useRef } from "react";
+import { CinematicHeading } from "./CinematicHeading";
 
 const STEPS = [
-  { n: "01", title: "Discovery", body: "Brief, references, audience and budget. We map the why before the what." },
+  { n: "01", title: "Discovery", body: "Brief, references, audience and goals. I map the why before the what." },
   { n: "02", title: "Strategy", body: "Story arc, format and channel strategy aligned to a single goal." },
   { n: "03", title: "Storyboard", body: "Beats, frames and motion direction. Approved before a single cut." },
   { n: "04", title: "Editing", body: "Story-first edit, pacing and rhythm. Up to two structured revision rounds." },
@@ -22,11 +23,10 @@ export function Process() {
     <section id="process" className="relative mt-32 scroll-mt-24 md:mt-48">
       <div className="container-px mx-auto max-w-5xl">
         <div className="max-w-2xl">
-          <p className="eyebrow">The process</p>
-          <h2 className="mt-4 heading-display text-balance text-4xl md:text-6xl">
-            A calm, deliberate
-            <br className="hidden md:block" /> way of working.
-          </h2>
+            <CinematicHeading 
+              tagline="The process" 
+              text="A calm, deliberate way of working." 
+            />
           <p className="mt-6 max-w-lg text-[15px] text-muted-foreground">
             Six steps from kickoff to launch — clear deliverables, no surprises,
             no scope drift.
