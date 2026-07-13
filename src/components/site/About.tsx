@@ -48,7 +48,7 @@ export function About() {
   }, [mouseX, mouseY]);
 
   return (
-    <section id="about" className="relative mt-24 py-16 scroll-mt-24 md:mt-36">
+    <section id="about" className="relative mt-12 py-10 lg:mt-24 lg:py-16 scroll-mt-24 md:mt-36">
       <div className="container-px mx-auto max-w-7xl">
         {/* Main Spread Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
@@ -81,11 +81,11 @@ export function About() {
             </motion.div>
 
             {/* Timeline Spread */}
-            <div className="space-y-6 pt-6 text-left">
+            <div className="space-y-4 lg:space-y-6 pt-4 lg:pt-6 text-left">
               <h3 className="font-display text-xs uppercase tracking-[0.2em] text-[#8B7CFF] font-semibold">
                 Timeline
               </h3>
-              <div className="border-t border-border pt-6 space-y-6">
+              <div className="border-t border-border pt-4 lg:pt-6 space-y-4 lg:space-y-6">
                 {TIMELINE.map((item, index) => (
                   <motion.div
                     key={index}
@@ -131,11 +131,11 @@ export function About() {
             </div>
 
             {/* Core Values Asymmetric Grid */}
-            <div className="space-y-6 border-t border-border pt-8">
+            <div className="space-y-4 lg:space-y-6 border-t border-border pt-6 lg:pt-8">
               <h3 className="font-display text-xs uppercase tracking-[0.2em] text-[#8B7CFF] font-semibold">
                 Editorial Values
               </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-6">
+              <div className="grid grid-cols-1 min-[430px]:grid-cols-2 gap-4 lg:gap-8 mt-4 lg:mt-6">
                 {VALUES.map((val, idx) => (
                   <motion.div
                     key={val.k}
@@ -157,11 +157,11 @@ export function About() {
             </div>
 
             {/* Software Capabilities - Glowing Tech cards */}
-            <div className="space-y-6 border-t border-border pt-8">
+            <div className="space-y-4 lg:space-y-6 border-t border-border pt-6 lg:pt-8">
               <h3 className="font-display text-xs uppercase tracking-[0.2em] text-[#8B7CFF] font-semibold">
                 Resolve finishing
               </h3>
-              <div className="flex flex-wrap gap-4 mt-4">
+              <div className="flex flex-wrap gap-2 lg:gap-4 mt-4">
                 {SOFTWARE.map((tech, idx) => (
                   <motion.div
                     key={tech.name}
@@ -170,7 +170,7 @@ export function About() {
                     viewport={{ once: true }}
                     transition={{ duration: 0.6, delay: idx * 0.08 }}
                     whileHover={{ borderColor: "rgba(110, 231, 255, 0.4)", y: -3 }}
-                    className="flex-1 min-w-[140px] rounded-xl border border-border bg-card p-5 flex flex-col justify-between transition-all duration-300 hover:shadow-[0_0_20px_rgba(110,231,255,0.03)] cursor-default"
+                    className="flex-1 min-w-[130px] lg:min-w-[140px] rounded-xl border border-border bg-card p-3 lg:p-5 flex flex-col justify-between transition-all duration-300 hover:shadow-[0_0_20px_rgba(110,231,255,0.03)] cursor-default"
                   >
                     <span className="font-display text-[14px] font-semibold text-foreground">
                       {tech.name}

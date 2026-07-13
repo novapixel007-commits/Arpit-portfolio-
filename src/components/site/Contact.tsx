@@ -196,7 +196,7 @@ export function Contact() {
   }
 
   return (
-    <section id="contact" className="relative mt-24 py-16 scroll-mt-24 md:mt-36">
+    <section id="contact" className="relative mt-12 py-12 lg:mt-24 lg:py-16 scroll-mt-24 md:mt-36">
       <div className="container-px mx-auto max-w-7xl">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
 
@@ -256,7 +256,7 @@ export function Contact() {
           </div>
 
           {/* Right Column: Form (7 cols) */}
-          <div className="lg:col-span-7 bg-card border border-border rounded-[2rem] p-8 md:p-12 shadow-soft hover:shadow-[0_0_30px_rgba(110,231,255,0.02)] transition-shadow duration-500">
+          <div className="lg:col-span-7 bg-card border border-border rounded-[2rem] p-6 md:p-12 shadow-soft hover:shadow-[0_0_30px_rgba(110,231,255,0.02)] transition-shadow duration-500">
             <AnimatePresence mode="wait">
               {!submitted ? (
                 <motion.form
@@ -264,11 +264,11 @@ export function Contact() {
                   ref={formRef}
                   exit={{ opacity: 0, y: -10 }}
                   onSubmit={onSubmit}
-                  className="space-y-8"
+                  className="space-y-6 md:space-y-8"
                   noValidate
                   aria-label="Contact form"
                 >
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                     {/* Line Input Name */}
                     <div className="text-left">
                       <div className="relative group">
@@ -325,7 +325,7 @@ export function Contact() {
                   </div>
 
                   {/* Company / Brand + Budget row */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                     {/* Company / Brand (optional text) */}
                     <div className="text-left">
                       <div className="relative group">
@@ -367,7 +367,7 @@ export function Contact() {
                             aria-required="true"
                             aria-invalid={!!errors.budget}
                             aria-describedby={errors.budget ? "budget-error" : undefined}
-                            className="w-full border-b border-border bg-transparent py-3 pr-8 text-[14px] text-foreground outline-none transition-colors focus:border-[#6EE7FF] appearance-none cursor-pointer [&>option]:bg-card [&>option]:text-foreground"
+                            className="w-full border-b border-border bg-transparent py-3 md:py-3 min-h-[44px] md:min-h-0 pr-8 text-[14px] text-foreground outline-none transition-colors focus:border-[#6EE7FF] appearance-none cursor-pointer [&>option]:bg-card [&>option]:text-foreground"
                           >
                             <option value="" disabled hidden>
                               Select a range
@@ -408,7 +408,7 @@ export function Contact() {
                           type="button"
                           onClick={() => setType(t)}
                           aria-pressed={type === t}
-                          className={`rounded-full px-4 py-2 text-[12.5px] font-medium transition ${
+                          className={`rounded-full px-4 py-2 min-h-[44px] md:min-h-0 flex items-center text-[12.5px] font-medium transition ${
                             type === t
                               ? "bg-foreground text-background"
                               : "border border-border bg-surface text-muted-foreground hover:text-foreground"
@@ -435,7 +435,7 @@ export function Contact() {
                           type="button"
                           onClick={() => setTimeline(tl)}
                           aria-pressed={timeline === tl}
-                          className={`rounded-full px-4 py-2 text-[12.5px] font-medium transition ${
+                          className={`rounded-full px-4 py-2 min-h-[44px] md:min-h-0 flex items-center text-[12.5px] font-medium transition ${
                             timeline === tl
                               ? "bg-foreground text-background"
                               : "border border-border bg-surface text-muted-foreground hover:text-foreground"

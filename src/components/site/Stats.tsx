@@ -35,7 +35,7 @@ export function Stats() {
   return (
     <section className="relative mt-32 md:mt-44">
       <div className="container-px mx-auto max-w-7xl">
-        <div className="grid grid-cols-2 gap-y-10 rounded-3xl hairline bg-surface px-6 py-12 md:grid-cols-4 md:gap-0 md:px-12 md:py-14">
+        <div className="grid grid-cols-2 gap-y-8 rounded-3xl hairline bg-surface px-4 py-8 lg:gap-y-10 lg:px-6 lg:py-12 md:grid-cols-4 md:gap-0 md:px-12 md:py-14">
           {STATS.map((s, i) => (
             <motion.div
               key={s.label}
@@ -58,7 +58,7 @@ export function Stats() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 1 }}
-          className="mt-14"
+          className="mt-8 lg:mt-14"
         >
           <p className="text-center text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
             Trusted by teams building the next chapter

@@ -41,8 +41,10 @@ function ProjectCard({ project, index, isPlaying, onPlay }: ProjectCardProps) {
       whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
       viewport={{ once: true, margin: "-100px" }}
       transition={{ duration: 1.2, delay: transitionDelay, ease: [0.16, 1, 0.3, 1] }}
-      className={`group flex flex-col w-full select-none ${
-        isHorizontal ? "col-span-1 md:col-span-2" : "col-span-1"
+      className={`group flex flex-col select-none ${
+        isHorizontal 
+          ? "w-full col-span-1 md:col-span-2" 
+          : "col-span-1 w-[88%] max-w-[320px] mx-auto lg:w-full lg:max-w-none lg:mx-0"
       }`}
     >
       {/* Video frame — zero text overlays inside */}
@@ -151,7 +153,7 @@ export function Projects() {
   const [playingId, setPlayingId] = useState<number | null>(null);
 
   return (
-    <section id="work" className="relative mt-24 py-20 scroll-mt-24 md:mt-36">
+    <section id="work" className="relative mt-12 py-12 lg:mt-24 lg:py-20 scroll-mt-24 md:mt-36">
       <div className="container-px mx-auto max-w-7xl">
         {/* Magazine Section Header */}
         <div className="grid grid-cols-1 md:grid-cols-[1.2fr_0.8fr] gap-8 items-end border-b border-border pb-12 mb-16">
@@ -165,7 +167,7 @@ export function Projects() {
         </div>
 
         {/* Asymmetric Magazine Poster Layout Grid — exactly 6 cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-14 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8 lg:gap-y-14 items-start">
           {/* Card 1: Horizontal */}
           <div className="md:col-span-2">
             <ProjectCard

@@ -37,7 +37,19 @@ export function Navbar() {
   const navOpacity    = useTransform(scrollY, [0, 150], [0.70, 0.92]);
   const blurAmount    = useTransform(scrollY, [0, 150], [20, 36]);
   const shadowOpacity = useTransform(scrollY, [0, 150], [0.06, 0.18]);
-  const navHeight     = useTransform(scrollY, [0, 120], [72, 60]);
+  
+  const [isDesktop, setIsDesktop] = useState(true);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const check = () => setIsDesktop(window.innerWidth >= 1024);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  const navHeightDesktop = useTransform(scrollY, [0, 120], [72, 60]);
+  const navHeightMobile = useTransform(scrollY, [0, 120], [64, 52]);
+  const navHeight = isDesktop ? navHeightDesktop : navHeightMobile;
 
   const backdropFilterStyle = useMotionTemplate`blur(${blurAmount}px) saturate(160%)`;
 
@@ -176,6 +188,7 @@ export function Navbar() {
 
         {/* Content */}
         <div
+          className="px-4 lg:px-[20px]"
           style={{
             position: "relative",
             zIndex: 10,
@@ -184,13 +197,12 @@ export function Navbar() {
             width: "100%",
             alignItems: "center",
             justifyContent: "space-between",
-            padding: "0 20px",
           }}
         >
           {/* Logo */}
           <Link to="/" style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
             <span style={{ display: "inline-block", width: "6px", height: "6px", borderRadius: "50%", background: "#73E8FF" }} />
-            <span style={{ fontFamily: "var(--font-display)", fontSize: "13.5px", fontWeight: 600, letterSpacing: "-0.02em", color: "var(--color-foreground)" }}>
+            <span className="text-[12.5px] lg:text-[13.5px]" style={{ fontFamily: "var(--font-display)", fontWeight: 600, letterSpacing: "-0.02em", color: "var(--color-foreground)" }}>
               arpit sharma
             </span>
           </Link>
@@ -286,10 +298,9 @@ export function Navbar() {
             <button
               aria-label={open ? "Close menu" : "Open menu"}
               onClick={() => setOpen((v) => !v)}
+              className="size-8 lg:size-9"
               style={{
                 display: "grid",
-                width: "36px",
-                height: "36px",
                 placeItems: "center",
                 borderRadius: "50%",
                 border: "1px solid rgba(255,255,255,0.15)",
@@ -299,8 +310,8 @@ export function Navbar() {
               }}
             >
               {open
-                ? <X    size={16} color="rgba(255,255,255,0.8)" />
-                : <Menu size={16} color="rgba(255,255,255,0.8)" />}
+                ? <X    size={14} color="rgba(255,255,255,0.8)" />
+                : <Menu size={14} color="rgba(255,255,255,0.8)" />}
             </button>
           </div>
         </div>
