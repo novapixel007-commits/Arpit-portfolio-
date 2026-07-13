@@ -50,6 +50,26 @@ const BUDGET_CARDS = [
   { id: "Let's Discuss", label: "Let's Discuss" },
 ];
 
+// ─── FIELD ERROR COMPONENT ───────────────────────────────────────────────────
+function FieldError({ message }: { message?: string }) {
+  return (
+    <AnimatePresence>
+      {message && (
+        <motion.span
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.18 }}
+          className="mt-1.5 block text-[11px] font-mono text-red-400 text-left"
+          role="alert"
+        >
+          {message}
+        </motion.span>
+      )}
+    </AnimatePresence>
+  );
+}
+
 // ─── FLOATING LABEL INPUT COMPONENT ───────────────────────────────────────────
 function FloatingInput({
   id,
