@@ -153,10 +153,10 @@ export function Projects() {
   const [playingId, setPlayingId] = useState<number | null>(null);
 
   return (
-    <section id="work" className="relative mt-14 py-14 lg:mt-24 lg:py-20 scroll-mt-24 md:mt-36">
+    <section id="work" className="relative mt-6 py-8 lg:mt-24 lg:py-20 scroll-mt-24 md:mt-36">
       <div className="container-px mx-auto max-w-7xl">
         {/* Magazine Section Header */}
-        <div className="grid grid-cols-1 md:grid-cols-[1.2fr_0.8fr] gap-6 lg:gap-8 items-end border-b border-border pb-8 mb-10 lg:pb-12 lg:mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-[1.2fr_0.8fr] gap-4 lg:gap-8 items-end border-b border-border pb-4 mb-6 lg:pb-12 lg:mb-16">
             <CinematicHeading 
               tagline="selected films" 
               text="editorial cuts, cinematic finishing." 

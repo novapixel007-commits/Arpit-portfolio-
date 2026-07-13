@@ -65,7 +65,7 @@ export function Hero() {
   return (
     <section 
       ref={containerRef}
-      className="relative min-h-[80vh] lg:min-h-[95vh] flex items-center justify-center overflow-hidden pt-16 pb-8 lg:pt-32 lg:pb-20 xl:pt-40"
+      className="relative min-h-[auto] lg:min-h-[95vh] flex items-center justify-center overflow-hidden pt-20 pb-4 lg:pt-32 lg:pb-20 xl:pt-40"
     >
       <div className="container-px mx-auto w-full max-w-7xl">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
@@ -90,11 +90,11 @@ export function Hero() {
             </motion.div>
 
             {/* Massive Awwwards-Level Heading */}
-            <h1 className="mt-4 lg:mt-8 font-display text-[clamp(42px,9vw,46px)] lg:text-[clamp(2.4rem,6vw,5.4rem)] font-medium leading-[1.12] tracking-tighter text-foreground text-balance">
+            <h1 className="mt-2 lg:mt-8 font-display text-[clamp(36px,8vw,42px)] lg:text-[clamp(2.4rem,6vw,5.4rem)] font-medium leading-[1.05] tracking-tighter text-foreground text-balance">
               <TextReveal text="story before style." delay={0.25} />
               <br />
               <span className="text-[#8B7CFF] italic font-normal">
-                <TextReveal text="every frame must" delay={0.5} />
+                <TextReveal text="motion with purpose." delay={0.4} />
               </span>
               <br />
               <span className="bg-gradient-to-r from-[#6EE7FF] to-[#8B7CFF] bg-clip-text text-transparent">
@@ -107,7 +107,7 @@ export function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 1.1, ease }}
-              className="mt-4 lg:mt-8 max-w-lg text-[16px] leading-relaxed text-muted-foreground"
+              className="mt-3 lg:mt-8 max-w-lg text-[14px] lg:text-[16px] leading-snug lg:leading-relaxed text-muted-foreground"
             >
               I build immersive cinematic video productions for ambitious agencies, creators and startups. High-end color grading, precise audio Finishes, and custom Fusion graphics.
             </motion.p>
@@ -117,17 +117,17 @@ export function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 1.3, ease }}
-              className="mt-6 lg:mt-10 flex flex-wrap items-center gap-3 lg:gap-4"
+              className="mt-4 lg:mt-10 flex flex-wrap items-center gap-2 lg:gap-4"
             >
               <a
                 href="#work"
-                className="btn-premium flex items-center justify-center h-12 lg:h-auto bg-foreground px-8 lg:py-4 text-[13px] font-semibold text-background"
+                className="btn-premium flex items-center justify-center h-10 lg:h-auto bg-foreground px-6 lg:px-8 lg:py-4 text-[12px] lg:text-[13px] font-semibold text-background"
               >
                 <span className="relative z-10">view work showcase</span>
               </a>
               <a
                 href="#contact"
-                className="btn-premium flex items-center justify-center h-12 lg:h-auto border border-border bg-surface px-8 lg:py-4 text-[13px] font-semibold text-foreground"
+                className="btn-premium flex items-center justify-center h-10 lg:h-auto border border-border bg-surface px-6 lg:px-8 lg:py-4 text-[12px] lg:text-[13px] font-semibold text-foreground"
               >
                 start brief
               </a>

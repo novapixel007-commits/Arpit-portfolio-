@@ -196,12 +196,12 @@ export function Contact() {
   }
 
   return (
-    <section id="contact" className="relative mt-14 py-14 lg:mt-24 lg:py-16 scroll-mt-24 md:mt-36">
+    <section id="contact" className="relative mt-6 py-8 lg:mt-24 lg:py-16 scroll-mt-24 md:mt-36">
       <div className="container-px mx-auto max-w-7xl">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
 
           {/* Left Column: Info (5 cols) */}
-          <div className="lg:col-span-5 text-left space-y-6 lg:space-y-10">
+          <div className="lg:col-span-5 text-left space-y-4 lg:space-y-10">
             <CinematicHeading
               tagline="get in touch"
               text="let's build something real."
@@ -256,7 +256,7 @@ export function Contact() {
           </div>
 
           {/* Right Column: Form (7 cols) */}
-          <div className="lg:col-span-7 bg-card border border-border rounded-[2rem] p-6 md:p-12 shadow-soft hover:shadow-[0_0_30px_rgba(110,231,255,0.02)] transition-shadow duration-500">
+          <div className="lg:col-span-7 bg-card border border-border rounded-[1.5rem] lg:rounded-[2rem] p-5 md:p-12 shadow-soft hover:shadow-[0_0_30px_rgba(110,231,255,0.02)] transition-shadow duration-500">
             <AnimatePresence mode="wait">
               {!submitted ? (
                 <motion.form

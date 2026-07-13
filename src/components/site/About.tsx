@@ -48,10 +48,10 @@ export function About() {
   }, [mouseX, mouseY]);
 
   return (
-    <section id="about" className="relative mt-14 py-14 lg:mt-24 lg:py-16 scroll-mt-24 md:mt-36">
+    <section id="about" className="relative mt-8 py-8 lg:mt-24 lg:py-16 scroll-mt-24 md:mt-36">
       <div className="container-px mx-auto max-w-7xl">
         {/* Main Spread Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
           
           {/* Left Column: Portrait & Timeline (5 cols) */}
           <div className="lg:col-span-5 space-y-12">
@@ -86,25 +86,24 @@ export function About() {
                 Timeline
               </h3>
               <div className="border-t border-border pt-4 lg:pt-6 space-y-4 lg:space-y-6">
-                {TIMELINE.map((item, index) => (
+                {TIMELINE.map((item, i) => (
                   <motion.div
-                    key={index}
+                    key={i}
                     initial={{ opacity: 0, x: -10 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.8, delay: index * 0.1 }}
-                    className="flex flex-col sm:flex-row sm:justify-between items-start gap-2"
+                    transition={{ duration: 0.5, delay: i * 0.1 }}
+                    className="flex flex-row justify-between items-center border-b border-border/50 pb-2 lg:border-none lg:pb-0"
                   >
-                    <div>
-                      <span className="font-mono text-[10px] lg:text-[11px] text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
-                        <span className="inline-block size-1 lg:size-1.5 rounded-full bg-[#8B7CFF]" />
-                        {item.year}
-                      </span>
-                      <h4 className="font-display text-[16px] lg:text-[15px] font-medium text-foreground mt-1">
+                    <div className="flex flex-col lg:block">
+                      <h4 className="font-display text-[14px] lg:text-[15px] font-medium text-foreground">
                         {item.role}
                       </h4>
+                      <span className="font-mono text-[9px] lg:text-[11px] text-[#8B7CFF] uppercase tracking-widest block mt-0.5 lg:mt-1">
+                        {item.year}
+                      </span>
                     </div>
-                    <span className="text-[14px] lg:text-[13px] text-muted-foreground mt-1 sm:mt-0 sm:text-right">
+                    <span className="text-[12px] lg:text-[13px] text-muted-foreground text-right max-w-[45%] lg:max-w-none truncate lg:overflow-visible">
                       {item.company}
                     </span>
                   </motion.div>
@@ -171,9 +170,9 @@ export function About() {
                     viewport={{ once: true }}
                     transition={{ duration: 0.6, delay: idx * 0.08 }}
                     whileHover={{ borderColor: "rgba(110, 231, 255, 0.4)", y: -3 }}
-                    className="flex-1 min-w-[130px] lg:min-w-[140px] max-h-[150px] lg:max-h-none rounded-xl border border-border bg-card p-5 flex flex-col justify-between transition-all duration-300 hover:shadow-[0_0_20px_rgba(110,231,255,0.03)] cursor-default"
+                    className="flex-1 min-w-[130px] lg:min-w-[140px] h-[100px] lg:h-auto lg:max-h-none rounded-xl border border-border bg-card p-4 lg:p-5 flex flex-col justify-between transition-all duration-300 hover:shadow-[0_0_20px_rgba(110,231,255,0.03)] cursor-default"
                   >
-                    <span className="font-display text-[14px] font-semibold text-foreground">
+                    <span className="font-display text-[13px] lg:text-[14px] font-semibold text-foreground">
                       {tech.name}
                     </span>
                     <span className="text-[11px] font-mono text-muted-foreground mt-2 uppercase tracking-wider">

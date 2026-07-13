@@ -38,12 +38,13 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const [introActive, setIntroActive] = useState(true);
+  const [showSsrOverlay, setShowSsrOverlay] = useState(true);
   const pageRef = useRef<HTMLDivElement | null>(null);
 
   return (
     <div className="relative min-h-screen overflow-x-hidden">
       {/* SSR black overlay to prevent hydration flashes on first-visit */}
-      <div className="fixed inset-0 bg-[#050505] z-[9999]" id="ssr-overlay" />
+      {showSsrOverlay && <div className="fixed inset-0 bg-[#050505] z-[9999]" id="ssr-overlay" />}
 
       {/* Homepage Content wrapper revealed by clip-path mask */}
       <div
@@ -70,9 +71,7 @@ function Index() {
           pageRef={pageRef}
           onComplete={() => {
             setIntroActive(false);
-            // Remove the ssr overlay if still present
-            const ssrOverlay = document.getElementById("ssr-overlay");
-            if (ssrOverlay) ssrOverlay.remove();
+            setShowSsrOverlay(false);
           }}
         />
       )}
