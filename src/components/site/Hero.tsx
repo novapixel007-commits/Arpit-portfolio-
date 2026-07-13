@@ -128,6 +128,7 @@ function FloatingTag({
   mouseX,
   mouseY,
   parallaxMultiplier = 1,
+  prefersReducedMotion = false,
 }: {
   text: string;
   className?: string;
@@ -137,9 +138,10 @@ function FloatingTag({
   mouseX: ReturnType<typeof useMotionValue>;
   mouseY: ReturnType<typeof useMotionValue>;
   parallaxMultiplier?: number;
+  prefersReducedMotion?: boolean;
 }) {
-  const pX = useSpring(useTransform(mouseX, [-0.5, 0.5], [-25 * parallaxMultiplier, 25 * parallaxMultiplier]), { stiffness: 50, damping: 22 });
-  const pY = useSpring(useTransform(mouseY, [-0.5, 0.5], [-20 * parallaxMultiplier, 20 * parallaxMultiplier]), { stiffness: 50, damping: 22 });
+  const pX = useSpring(useTransform(mouseX, [-0.5, 0.5], prefersReducedMotion ? [0, 0] : [-25 * parallaxMultiplier, 25 * parallaxMultiplier]), { stiffness: 50, damping: 22 });
+  const pY = useSpring(useTransform(mouseY, [-0.5, 0.5], prefersReducedMotion ? [0, 0] : [-20 * parallaxMultiplier, 20 * parallaxMultiplier]), { stiffness: 50, damping: 22 });
 
   return (
     <motion.div
@@ -150,9 +152,9 @@ function FloatingTag({
       className={`absolute z-30 pointer-events-auto ${className}`}
     >
       <motion.div
-        animate={{ y: [0, -5, 0] }}
+        animate={prefersReducedMotion ? {} : { y: [0, -5, 0] }}
         transition={{ duration, repeat: Infinity, ease: "easeInOut" }}
-        whileHover={{ scale: 1.05 }}
+        whileHover={prefersReducedMotion ? {} : { scale: 1.05 }}
         className="flex items-center gap-2 whitespace-nowrap rounded-[14px] border border-white/10 bg-[#0f121c]/65 backdrop-blur-md px-3.5 py-2 text-[11px] font-mono text-white/80 tracking-wider shadow-[0_4px_20px_rgba(0,0,0,0.35)] transition-shadow duration-300 hover:shadow-[0_0_20px_rgba(110,231,255,0.15)] cursor-default"
       >
         <span className="size-1.5 rounded-full bg-[#6EE7FF] inline-block shrink-0 shadow-[0_0_6px_#6EE7FF]" />
@@ -169,15 +171,17 @@ function MacBookMockup({
   floatY,
   mouseX,
   mouseY,
+  prefersReducedMotion = false,
 }: {
   rotateX: ReturnType<typeof useSpring>;
   rotateY: ReturnType<typeof useSpring>;
   floatY: ReturnType<typeof useSpring>;
   mouseX: ReturnType<typeof useMotionValue>;
   mouseY: ReturnType<typeof useMotionValue>;
+  prefersReducedMotion?: boolean;
 }) {
-  const laptopX = useSpring(useTransform(mouseX, [-0.5, 0.5], [-8, 8]), { stiffness: 60, damping: 20 });
-  const laptopY = useSpring(useTransform(mouseY, [-0.5, 0.5], [-6, 6]), { stiffness: 60, damping: 20 });
+  const laptopX = useSpring(useTransform(mouseX, [-0.5, 0.5], prefersReducedMotion ? [0, 0] : [-8, 8]), { stiffness: 60, damping: 20 });
+  const laptopY = useSpring(useTransform(mouseY, [-0.5, 0.5], prefersReducedMotion ? [0, 0] : [-6, 6]), { stiffness: 60, damping: 20 });
 
   return (
     <div className="relative w-full max-w-[760px] mx-auto" style={{ perspective: "1500px" }}>
@@ -197,7 +201,7 @@ function MacBookMockup({
       <motion.div
         className="absolute pointer-events-none"
         style={{ bottom: "-5%", left: "8%", right: "8%", height: "24px", zIndex: 0 }}
-        animate={{ opacity: [0.4, 0.6, 0.4], scaleX: [0.95, 1.02, 0.95] }}
+        animate={prefersReducedMotion ? {} : { opacity: [0.4, 0.6, 0.4], scaleX: [0.95, 1.02, 0.95] }}
         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       >
         <div
@@ -220,6 +224,7 @@ function MacBookMockup({
         mouseX={mouseX}
         mouseY={mouseY}
         parallaxMultiplier={1.4}
+        prefersReducedMotion={prefersReducedMotion}
       />
       {/* Top Left: DaVinci Resolve */}
       <FloatingTag
@@ -230,6 +235,7 @@ function MacBookMockup({
         mouseX={mouseX}
         mouseY={mouseY}
         parallaxMultiplier={1.1}
+        prefersReducedMotion={prefersReducedMotion}
       />
       {/* Upper Right: Motion Graphics */}
       <FloatingTag
@@ -240,6 +246,7 @@ function MacBookMockup({
         mouseX={mouseX}
         mouseY={mouseY}
         parallaxMultiplier={1.2}
+        prefersReducedMotion={prefersReducedMotion}
       />
       {/* Bottom Left: Color Grading */}
       <FloatingTag
@@ -250,6 +257,7 @@ function MacBookMockup({
         mouseX={mouseX}
         mouseY={mouseY}
         parallaxMultiplier={1.3}
+        prefersReducedMotion={prefersReducedMotion}
       />
       {/* Bottom Right: 4K • 60fps */}
       <FloatingTag
@@ -260,6 +268,7 @@ function MacBookMockup({
         mouseX={mouseX}
         mouseY={mouseY}
         parallaxMultiplier={1.0}
+        prefersReducedMotion={prefersReducedMotion}
       />
 
       {/* ── Laptop frame with Parallax & Tilt ── */}
@@ -368,7 +377,18 @@ function MacBookMockup({
 // ─── HERO ─────────────────────────────────────────────────────────────────────
 export function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const isHeroInView = useInView(containerRef, { once: false, margin: "100px" });
   const [spotlightPos, setSpotlightPos] = useState({ x: 50, y: 50 });
+
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setPrefersReducedMotion(mediaQuery.matches);
+    const listener = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
+    mediaQuery.addEventListener("change", listener);
+    return () => mediaQuery.removeEventListener("change", listener);
+  }, []);
 
   const { scrollY } = useScroll();
   const textY = useTransform(scrollY, [0, 500], [0, 100]);
@@ -379,34 +399,38 @@ export function Hero() {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  // Balanced 2.5 degree maximum tilt
-  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [2.5, -2.5]), {
-    damping: 35,
-    stiffness: 90,
+  // Balanced maximum tilt
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], prefersReducedMotion ? [0, 0] : [2.5, -2.5]), {
+    damping: 40,
+    stiffness: 80,
   });
-  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-2.5, 2.5]), {
-    damping: 35,
-    stiffness: 90,
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], prefersReducedMotion ? [0, 0] : [-2.5, 2.5]), {
+    damping: 40,
+    stiffness: 80,
   });
 
   // Autonomous float
   const rawFloat = useMotionValue(0);
-  const floatY = useSpring(rawFloat, { damping: 16, stiffness: 35 });
+  const floatY = useSpring(rawFloat, { damping: 20, stiffness: 25 });
 
   useEffect(() => {
+    if (prefersReducedMotion) {
+      rawFloat.set(0);
+      return;
+    }
     let frame: number;
     let start: number | null = null;
     const tick = (ts: number) => {
       if (!start) start = ts;
-      rawFloat.set(Math.sin(((ts - start) / 1000) * 0.55) * 8);
+      rawFloat.set(Math.sin(((ts - start) / 1000) * 0.35) * 6);
       frame = requestAnimationFrame(tick);
     };
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [rawFloat]);
+  }, [rawFloat, prefersReducedMotion]);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined" || !isHeroInView) return;
     const onMove = (e: MouseEvent) => {
       const nx = e.clientX / window.innerWidth - 0.5;
       const ny = e.clientY / window.innerHeight - 0.5;
@@ -419,7 +443,7 @@ export function Hero() {
     };
     window.addEventListener("mousemove", onMove, { passive: true });
     return () => window.removeEventListener("mousemove", onMove);
-  }, [mouseX, mouseY]);
+  }, [mouseX, mouseY, isHeroInView]);
 
   return (
     <section
@@ -430,9 +454,9 @@ export function Hero() {
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
         {/* Mouse-following spotlight */}
         <div
-          className="absolute inset-0 transition-opacity duration-300"
+          className="absolute inset-0 transition-opacity duration-500"
           style={{
-            background: `radial-gradient(600px circle at ${spotlightPos.x}% ${spotlightPos.y}%, rgba(110,231,255,0.04) 0%, transparent 60%)`,
+            background: isHeroInView ? `radial-gradient(500px circle at ${spotlightPos.x}% ${spotlightPos.y}%, rgba(110,231,255,0.035) 0%, transparent 60%)` : "transparent",
           }}
         />
 
@@ -697,6 +721,7 @@ export function Hero() {
               floatY={floatY}
               mouseX={mouseX}
               mouseY={mouseY}
+              prefersReducedMotion={prefersReducedMotion}
             />
           </motion.div>
 

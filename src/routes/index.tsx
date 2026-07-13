@@ -1,17 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
+import React, { Suspense, lazy } from "react";
 
 import { Hero } from "@/components/site/Hero";
-import { Stats } from "@/components/site/Stats";
-import { Projects } from "@/components/site/Projects";
-import { Process } from "@/components/site/Process";
-import { Testimonials } from "@/components/site/Testimonials";
-import { About } from "@/components/site/About";
-import { ClosingCTA } from "@/components/site/ClosingCTA";
-import { Contact } from "@/components/site/Contact";
-import { Footer } from "@/components/site/Footer";
 import { ScrollProgress } from "@/components/site/ScrollProgress";
 import { IntroLoader } from "@/components/site/IntroLoader";
 import { useRef, useState } from "react";
+
+// Lazy load below-the-fold sections for optimized initial bundle loading
+const Stats = lazy(() => import("@/components/site/Stats").then(m => ({ default: m.Stats })));
+const Projects = lazy(() => import("@/components/site/Projects").then(m => ({ default: m.Projects })));
+const Process = lazy(() => import("@/components/site/Process").then(m => ({ default: m.Process })));
+const Testimonials = lazy(() => import("@/components/site/Testimonials").then(m => ({ default: m.Testimonials })));
+const About = lazy(() => import("@/components/site/About").then(m => ({ default: m.About })));
+const ClosingCTA = lazy(() => import("@/components/site/ClosingCTA").then(m => ({ default: m.ClosingCTA })));
+const Contact = lazy(() => import("@/components/site/Contact").then(m => ({ default: m.Contact })));
+const Footer = lazy(() => import("@/components/site/Footer").then(m => ({ default: m.Footer })));
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -53,15 +56,19 @@ function Index() {
         <ScrollProgress />
         <main>
           <Hero />
-          <Stats />
-          <Projects />
-          <Process />
-          <Testimonials />
-          <About />
-          <ClosingCTA />
-          <Contact />
+          <Suspense fallback={null}>
+            <Stats />
+            <Projects />
+            <Process />
+            <Testimonials />
+            <About />
+            <ClosingCTA />
+            <Contact />
+          </Suspense>
         </main>
-        <Footer />
+        <Suspense fallback={null}>
+          <Footer />
+        </Suspense>
       </div>
 
       {introActive && (

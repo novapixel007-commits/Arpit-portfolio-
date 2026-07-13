@@ -381,21 +381,23 @@ function SoftwareCard({ tech, idx }: { tech: (typeof SOFTWARE)[0]; idx: number }
 
 // ─── ABOUT SECTION ────────────────────────────────────────────────────────────
 export function About() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const isSectionInView = useInView(sectionRef, { once: false, margin: "100px" });
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined" || !isSectionInView) return;
     const onMove = (e: MouseEvent) => {
       mouseX.set(e.clientX / window.innerWidth - 0.5);
       mouseY.set(e.clientY / window.innerHeight - 0.5);
     };
     window.addEventListener("mousemove", onMove, { passive: true });
     return () => window.removeEventListener("mousemove", onMove);
-  }, [mouseX, mouseY]);
+  }, [mouseX, mouseY, isSectionInView]);
 
   return (
-    <section id="about" className="relative scroll-mt-24 mt-10 py-8 lg:mt-24 lg:py-16">
+    <section id="about" ref={sectionRef} className="relative scroll-mt-24 mt-10 py-8 lg:mt-24 lg:py-16">
       <div className="container-px mx-auto max-w-7xl">
 
         {/* ══ MOBILE ══ (hidden lg+) ══════════════════════════════════════ */}

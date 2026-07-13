@@ -4,9 +4,10 @@ import {
   useMotionValue,
   useSpring,
   useTransform,
+  useInView,
 } from "motion/react";
-import { Play, ArrowUpRight, Clock, Star, Film, Monitor } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { Play, ArrowUpRight, Film } from "lucide-react";
+import { useState, useRef, useEffect, useCallback, memo } from "react";
 import { PROJECTS, type Project } from "@/data/projects";
 
 // Extract YouTube ID safely
@@ -31,17 +32,24 @@ const PROJECT_METADATA: Record<
 };
 
 // ─── HERO PROJECT (HORIZONTAL CARD) ───────────────────────────────────────────
-function HeroProjectCard({
+const HeroProjectCard = memo(function HeroProjectCard({
   project,
   isPlaying,
   onPlay,
+  onClosePlay,
   onHover,
+  prefersReducedMotion,
 }: {
   project: Project;
   isPlaying: boolean;
   onPlay: () => void;
+  onClosePlay: () => void;
   onHover: (hovering: boolean) => void;
+  prefersReducedMotion: boolean;
 }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const isCardInView = useInView(cardRef, { once: false, margin: "-100px" });
+
   const youtubeId = project.video ? getYouTubeId(project.video) : null;
   const isYouTube = Boolean(youtubeId);
   const meta = PROJECT_METADATA[project.id] || {
@@ -54,46 +62,55 @@ function HeroProjectCard({
     ? `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`
     : project.thumbnail ?? project.image;
 
+  // Auto-pause video when scrolled out of viewport
+  useEffect(() => {
+    if (!isCardInView && isPlaying) {
+      onClosePlay();
+    }
+  }, [isCardInView, isPlaying, onClosePlay]);
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 50, filter: "blur(8px)", scale: 0.98 }}
+      ref={cardRef}
+      initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 30, filter: "blur(6px)" }}
       whileInView={{ opacity: 1, y: 0, filter: "blur(0px)", scale: 1 }}
-      viewport={{ once: true, margin: "-120px" }}
-      transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
       onMouseEnter={() => onHover(true)}
       onMouseLeave={() => onHover(false)}
       className="w-full"
     >
       <div
-        className="group relative rounded-[2rem] border border-white/8 bg-card/30 overflow-hidden cursor-none select-none transition-all duration-500 hover:border-white/20 hover:shadow-[0_24px_80px_rgba(0,0,0,0.6)]"
+        className="group relative rounded-[2rem] border border-white/8 bg-card/30 overflow-hidden cursor-none select-none transition-all duration-400 hover:border-white/20 hover:shadow-lg"
         style={{ height: "clamp(350px, 50vw, 640px)" }}
       >
-        {/* Glow overlay */}
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-20 rounded-[2rem]"
-          style={{ boxShadow: "inset 0 0 40px rgba(110,231,255,0.08)" }} />
-
-        {/* Shine reflection sweep */}
-        <div className="absolute inset-0 z-20 pointer-events-none overflow-hidden">
-          <div className="absolute inset-y-0 w-1/2 bg-gradient-to-r from-transparent via-white/[0.04] to-transparent rotate-[20deg] translate-x-[-150%] group-hover:translate-x-[250%] transition-transform duration-1000 ease-out" />
-        </div>
+        {/* Shine reflection sweep — disabled in prefersReducedMotion */}
+        {!prefersReducedMotion && (
+          <div className="absolute inset-0 z-20 pointer-events-none overflow-hidden">
+            <div className="absolute inset-y-0 w-1/2 bg-gradient-to-r from-transparent via-white/[0.04] to-transparent rotate-[20deg] translate-x-[-150%] group-hover:translate-x-[250%] transition-transform duration-1000 ease-out" />
+          </div>
+        )}
 
         {/* Video / Thumbnail container */}
         <div className="absolute inset-0 size-full bg-black">
           {(!isPlaying || !isYouTube) && thumbnailSrc && (
-            <motion.img
+            <img
               src={thumbnailSrc}
               alt={project.title}
-              className="absolute inset-0 size-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+              loading="lazy"
+              className="absolute inset-0 size-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
             />
           )}
 
-          {!isYouTube && (
+          {/* Mount video element only when card is in view to avoid CPU decoding loads offscreen */}
+          {isCardInView && !isYouTube && (
             <video
               src={project.video}
               poster={thumbnailSrc}
               controls={isPlaying}
               loop
               playsInline
+              muted
               autoPlay={isPlaying}
               className={`absolute inset-0 size-full object-cover transition-opacity duration-500 ${
                 isPlaying ? "opacity-100" : "opacity-0"
@@ -101,23 +118,32 @@ function HeroProjectCard({
             />
           )}
 
-          {isYouTube && isPlaying && (
+          {/* Mount YouTube iframe only when card is visible and actively playing */}
+          {isCardInView && isYouTube && isPlaying && (
             <iframe
-              src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&playsinline=1&controls=1&modestbranding=1&rel=0&fs=1&iv_load_policy=3&cc_load_policy=0&disablekb=0`}
-              className="absolute inset-0 size-full"
+              src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&playsinline=1&controls=0&modestbranding=1&rel=0&fs=1&iv_load_policy=3&cc_load_policy=0&disablekb=0`}
+              className="absolute pointer-events-none"
               allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
               allowFullScreen
-              style={{ border: "none" }}
+              style={{
+                border: "none",
+                width: "116%",
+                height: "116%",
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+              }}
               title={project.title}
               loading="lazy"
             />
           )}
 
-          {/* Premium Bottom dark vignette */}
+          {/* Bottom vignette */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent pointer-events-none z-10" />
         </div>
 
-        {/* Static overlay play button on hover */}
+        {/* Play trigger overlay */}
         {!isPlaying && (
           <button
             onClick={onPlay}
@@ -125,9 +151,9 @@ function HeroProjectCard({
             className="absolute inset-0 size-full flex items-center justify-center z-30 cursor-none"
           >
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              whileHover={{ scale: 1, opacity: 1 }}
-              className="px-6 py-3 rounded-full bg-white/10 border border-white/20 backdrop-blur-xl flex items-center gap-2.5 transition-all duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.5)] group-hover:scale-105"
+              initial={prefersReducedMotion ? { opacity: 0.9 } : { scale: 0.9, opacity: 0 }}
+              whileHover={prefersReducedMotion ? {} : { scale: 1, opacity: 1 }}
+              className="px-6 py-3 rounded-full bg-white/10 border border-white/20 backdrop-blur-md flex items-center gap-2.5 transition-all duration-300 shadow-md group-hover:scale-105"
             >
               <div className="size-6 rounded-full bg-white flex items-center justify-center">
                 <Play className="size-3 fill-black text-black translate-x-[0.5px]" />
@@ -139,7 +165,7 @@ function HeroProjectCard({
           </button>
         )}
 
-        {/* Bottom Left Case Study Overlay */}
+        {/* Details Overlay */}
         <div className="absolute bottom-6 left-6 right-6 lg:bottom-10 lg:left-10 lg:right-10 z-20 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 pointer-events-none">
           <div className="text-left space-y-2">
             <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-mono uppercase tracking-widest text-[#6EE7FF] bg-[#6EE7FF]/10 border border-[#6EE7FF]/20">
@@ -150,7 +176,6 @@ function HeroProjectCard({
               {project.title}
             </h3>
             
-            {/* Meta Row: Year, Duration, Role */}
             <div className="flex items-center gap-6 pt-1 text-white/50 text-[11px] font-mono">
               <div>
                 <span className="text-white/30 mr-1.5">YEAR:</span>
@@ -175,20 +200,27 @@ function HeroProjectCard({
       </div>
     </motion.div>
   );
-}
+});
 
 // ─── SUPPORTING PROJECT (VERTICAL CARD) ───────────────────────────────────────
-function VerticalProjectCard({
+const VerticalProjectCard = memo(function VerticalProjectCard({
   project,
   isPlaying,
   onPlay,
+  onClosePlay,
   onHover,
+  prefersReducedMotion,
 }: {
   project: Project;
   isPlaying: boolean;
   onPlay: () => void;
+  onClosePlay: () => void;
   onHover: (hovering: boolean) => void;
+  prefersReducedMotion: boolean;
 }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const isCardInView = useInView(cardRef, { once: false, margin: "-100px" });
+
   const youtubeId = project.video ? getYouTubeId(project.video) : null;
   const isYouTube = Boolean(youtubeId);
   const meta = PROJECT_METADATA[project.id] || {
@@ -201,41 +233,48 @@ function VerticalProjectCard({
     ? `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`
     : project.thumbnail ?? project.image;
 
+  // Auto-pause video when scrolled out of view
+  useEffect(() => {
+    if (!isCardInView && isPlaying) {
+      onClosePlay();
+    }
+  }, [isCardInView, isPlaying, onClosePlay]);
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 60, filter: "blur(6px)", scale: 0.98 }}
+      ref={cardRef}
+      initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 40, filter: "blur(6px)" }}
       whileInView={{ opacity: 1, y: 0, filter: "blur(0px)", scale: 1 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
       onMouseEnter={() => onHover(true)}
       onMouseLeave={() => onHover(false)}
       className="w-full"
     >
       <div
-        className="group relative rounded-[2rem] border border-white/8 bg-card/30 overflow-hidden cursor-none select-none transition-all duration-500 hover:border-white/20 hover:shadow-[0_20px_60px_rgba(0,0,0,0.55)]"
+        className="group relative rounded-[2rem] border border-white/8 bg-card/30 overflow-hidden cursor-none select-none transition-all duration-400 hover:border-white/20 hover:shadow-lg"
         style={{ height: "clamp(460px, 45vw, 560px)" }}
       >
-        {/* Glow overlay */}
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-20 rounded-[2rem]"
-          style={{ boxShadow: "inset 0 0 30px rgba(139,124,255,0.06)" }} />
-
         {/* Media */}
         <div className="absolute inset-0 size-full bg-black">
           {(!isPlaying || !isYouTube) && thumbnailSrc && (
-            <motion.img
+            <img
               src={thumbnailSrc}
               alt={project.title}
-              className="absolute inset-0 size-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03] group-hover:brightness-90"
+              loading="lazy"
+              className="absolute inset-0 size-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02] group-hover:brightness-90"
             />
           )}
 
-          {!isYouTube && (
+          {/* Mount video element only when card is in view to avoid CPU decoding loads offscreen */}
+          {isCardInView && !isYouTube && (
             <video
               src={project.video}
               poster={thumbnailSrc}
               controls={isPlaying}
               loop
               playsInline
+              muted
               autoPlay={isPlaying}
               className={`absolute inset-0 size-full object-cover transition-opacity duration-500 ${
                 isPlaying ? "opacity-100" : "opacity-0"
@@ -243,13 +282,22 @@ function VerticalProjectCard({
             />
           )}
 
-          {isYouTube && isPlaying && (
+          {/* Mount YouTube iframe only when card is visible and actively playing */}
+          {isCardInView && isYouTube && isPlaying && (
             <iframe
-              src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&playsinline=1&controls=1&modestbranding=1&rel=0&fs=1&iv_load_policy=3&cc_load_policy=0&disablekb=0`}
-              className="absolute inset-0 size-full"
+              src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&playsinline=1&controls=0&modestbranding=1&rel=0&fs=1&iv_load_policy=3&cc_load_policy=0&disablekb=0`}
+              className="absolute pointer-events-none"
               allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
               allowFullScreen
-              style={{ border: "none" }}
+              style={{
+                border: "none",
+                width: "116%",
+                height: "116%",
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+              }}
               title={project.title}
               loading="lazy"
             />
@@ -266,11 +314,11 @@ function VerticalProjectCard({
             className="absolute inset-0 size-full flex items-center justify-center z-30 cursor-none"
           >
             <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              whileHover={{ scale: 1, opacity: 1 }}
-              className="size-14 rounded-full bg-white/10 border border-white/25 backdrop-blur-md flex items-center justify-center shadow-lg transition-all duration-300"
+              initial={prefersReducedMotion ? { opacity: 0.9 } : { scale: 0.8, opacity: 0 }}
+              whileHover={prefersReducedMotion ? {} : { scale: 1, opacity: 1 }}
+              className="size-14 rounded-full bg-white/10 border border-white/25 backdrop-blur-md flex items-center justify-center shadow-md transition-all duration-300"
             >
-              <Play className="size-5 fill-white text-white translate-x-[1px] transition-transform duration-300 group-hover:rotate-6" />
+              <Play className="size-5 fill-white text-white translate-x-[1px]" />
             </motion.div>
           </button>
         )}
@@ -295,7 +343,7 @@ function VerticalProjectCard({
       </div>
     </motion.div>
   );
-}
+});
 
 // ─── PROJECTS SECTION ─────────────────────────────────────────────────────────
 export function Projects() {
@@ -303,22 +351,41 @@ export function Projects() {
   const [cursorState, setCursorState] = useState<"hidden" | "active">("hidden");
 
   const sectionRef = useRef<HTMLDivElement>(null);
+  const isSectionInView = useInView(sectionRef, { once: false, margin: "100px" });
+
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setPrefersReducedMotion(mediaQuery.matches);
+    const listener = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
+    mediaQuery.addEventListener("change", listener);
+    return () => mediaQuery.removeEventListener("change", listener);
+  }, []);
+
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
 
-  const springCursorX = useSpring(cursorX, { stiffness: 450, damping: 30 });
-  const springCursorY = useSpring(cursorY, { stiffness: 450, damping: 30 });
+  // High performance spring parameters
+  const springCursorX = useSpring(cursorX, { stiffness: 500, damping: 35 });
+  const springCursorY = useSpring(cursorY, { stiffness: 500, damping: 35 });
 
+  // Only listen to mouse movements when the section is visible to avoid rendering updates offscreen
   useEffect(() => {
+    if (typeof window === "undefined" || !isSectionInView || prefersReducedMotion) return;
     const handleMouseMove = (e: MouseEvent) => {
       cursorX.set(e.clientX);
       cursorY.set(e.clientY);
     };
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
     return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, [cursorX, cursorY]);
+  }, [cursorX, cursorY, isSectionInView, prefersReducedMotion]);
 
-  // Order of projects: Hero -> Pair -> Hero -> Pair
+  const handleClosePlay = useCallback((id: number) => {
+    setPlayingId((current) => (current === id ? null : current));
+  }, []);
+
+  // Order of projects
   const hero1 = PROJECTS[0];
   const pair1_left = PROJECTS[1];
   const pair1_right = PROJECTS[2];
@@ -334,45 +401,50 @@ export function Projects() {
     >
       {/* ── SECTION BACKDROP ── */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-        {/* Floating gradient lights */}
-        <motion.div
-          animate={{ x: [0, 60, 0], y: [0, -40, 0] }}
-          transition={{ duration: 24, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-[25%] left-[-15%] w-[65%] h-[55%] rounded-full opacity-[0.05]"
-          style={{
-            background: "radial-gradient(circle, #6EE7FF 0%, transparent 70%)",
-            filter: "blur(90px)",
-          }}
-        />
-        <motion.div
-          animate={{ x: [0, -50, 0], y: [0, 45, 0] }}
-          transition={{ duration: 28, repeat: Infinity, ease: "easeInOut", delay: 4 }}
-          className="absolute bottom-[25%] right-[-15%] w-[65%] h-[55%] rounded-full opacity-[0.05]"
-          style={{
-            background: "radial-gradient(circle, #8B7CFF 0%, transparent 70%)",
-            filter: "blur(100px)",
-          }}
-        />
+        {/* Floating gradient lights (Static on prefers-reduced-motion to avoid repaint overhead) */}
+        {!prefersReducedMotion && (
+          <>
+            <motion.div
+              animate={{ x: [0, 40, 0], y: [0, -30, 0] }}
+              transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute top-[25%] left-[-15%] w-[65%] h-[55%] rounded-full opacity-[0.04]"
+              style={{
+                background: "radial-gradient(circle, #6EE7FF 0%, transparent 70%)",
+                filter: "blur(80px)",
+              }}
+            />
+            <motion.div
+              animate={{ x: [0, -30, 0], y: [0, 30, 0] }}
+              transition={{ duration: 30, repeat: Infinity, ease: "easeInOut", delay: 4 }}
+              className="absolute bottom-[25%] right-[-15%] w-[65%] h-[55%] rounded-full opacity-[0.04]"
+              style={{
+                background: "radial-gradient(circle, #8B7CFF 0%, transparent 70%)",
+                filter: "blur(90px)",
+              }}
+            />
+          </>
+        )}
 
-        {/* Subtle animated grain overlay */}
+        {/* Subtle static grain overlay */}
         <div
-          className="absolute inset-0 opacity-[0.02]"
+          className="absolute inset-0 opacity-[0.015]"
           style={{
             backgroundImage:
-              "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+              "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
             backgroundSize: "160px",
           }}
         />
 
-        {/* Micro particles */}
-        <div className="absolute inset-0 opacity-[0.12]">
-          <div className="absolute top-[18%] left-[25%] size-1 rounded-full bg-[#6EE7FF] animate-pulse" />
-          <div className="absolute top-[48%] left-[75%] size-1 rounded-full bg-[#8B7CFF] animate-pulse" style={{ animationDelay: "1.2s" }} />
-          <div className="absolute top-[78%] left-[18%] size-1 rounded-full bg-[#6EE7FF] animate-pulse" style={{ animationDelay: "2.4s" }} />
+        {/* Static decorative particles */}
+        <div className="absolute inset-0 opacity-[0.08]">
+          <div className="absolute top-[18%] left-[25%] size-1 rounded-full bg-[#6EE7FF]" />
+          <div className="absolute top-[48%] left-[75%] size-1 rounded-full bg-[#8B7CFF]" />
+          <div className="absolute top-[78%] left-[18%] size-1 rounded-full bg-[#6EE7FF]" />
         </div>
       </div>
 
-      {/* ── CUSTOM MAGNETIC PLAY CURSOR (DESKTOP) ── */}
+      {/* ── CUSTOM MAGNETIC PLAY CURSOR ── */}
+      {/* Optimized: Replace backdrop-filter with static high opacity bg to avoid massive repaint workloads on mouseMove */}
       <motion.div
         style={{
           x: springCursorX,
@@ -381,13 +453,13 @@ export function Projects() {
           translateY: "-50%",
         }}
         animate={{
-          scale: cursorState === "active" ? 1 : 0,
-          opacity: cursorState === "active" ? 1 : 0,
+          scale: cursorState === "active" && !prefersReducedMotion ? 1 : 0,
+          opacity: cursorState === "active" && !prefersReducedMotion ? 1 : 0,
         }}
-        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-        className="hidden lg:flex fixed pointer-events-none rounded-full bg-[#6EE7FF]/15 border border-[#6EE7FF]/40 size-16 items-center justify-center text-[10px] font-mono uppercase tracking-wider text-white mix-blend-difference z-50 shadow-[0_0_24px_rgba(110,231,255,0.25)]"
+        transition={{ duration: 0.25, ease: "easeOut" }}
+        className="hidden lg:flex fixed pointer-events-none rounded-full bg-black/90 border border-[#6EE7FF]/30 size-14 items-center justify-center text-[10px] font-mono uppercase tracking-wider text-white mix-blend-difference z-50 shadow-md"
       >
-        <span className="font-semibold tracking-widest text-[#6EE7FF]">Play</span>
+        <span className="font-semibold tracking-wider text-[#6EE7FF]">Play</span>
       </motion.div>
 
       <div className="container-px mx-auto max-w-7xl relative z-10">
@@ -410,7 +482,9 @@ export function Projects() {
             project={hero1}
             isPlaying={playingId === hero1.id}
             onPlay={() => setPlayingId(hero1.id)}
+            onClosePlay={() => handleClosePlay(hero1.id)}
             onHover={(h) => setCursorState(h ? "active" : "hidden")}
+            prefersReducedMotion={prefersReducedMotion}
           />
 
           {/* Row 2: 2 Supporting Projects (Vertical Side by Side) */}
@@ -419,13 +493,17 @@ export function Projects() {
               project={pair1_left}
               isPlaying={playingId === pair1_left.id}
               onPlay={() => setPlayingId(pair1_left.id)}
+              onClosePlay={() => handleClosePlay(pair1_left.id)}
               onHover={(h) => setCursorState(h ? "active" : "hidden")}
+              prefersReducedMotion={prefersReducedMotion}
             />
             <VerticalProjectCard
               project={pair1_right}
               isPlaying={playingId === pair1_right.id}
               onPlay={() => setPlayingId(pair1_right.id)}
+              onClosePlay={() => handleClosePlay(pair1_right.id)}
               onHover={(h) => setCursorState(h ? "active" : "hidden")}
+              prefersReducedMotion={prefersReducedMotion}
             />
           </div>
 
@@ -434,7 +512,9 @@ export function Projects() {
             project={hero2}
             isPlaying={playingId === hero2.id}
             onPlay={() => setPlayingId(hero2.id)}
+            onClosePlay={() => handleClosePlay(hero2.id)}
             onHover={(h) => setCursorState(h ? "active" : "hidden")}
+            prefersReducedMotion={prefersReducedMotion}
           />
 
           {/* Row 4: 2 Supporting Projects (Vertical Side by Side) */}
@@ -443,13 +523,17 @@ export function Projects() {
               project={pair2_left}
               isPlaying={playingId === pair2_left.id}
               onPlay={() => setPlayingId(pair2_left.id)}
+              onClosePlay={() => handleClosePlay(pair2_left.id)}
               onHover={(h) => setCursorState(h ? "active" : "hidden")}
+              prefersReducedMotion={prefersReducedMotion}
             />
             <VerticalProjectCard
               project={pair2_right}
               isPlaying={playingId === pair2_right.id}
               onPlay={() => setPlayingId(pair2_right.id)}
+              onClosePlay={() => handleClosePlay(pair2_right.id)}
               onHover={(h) => setCursorState(h ? "active" : "hidden")}
+              prefersReducedMotion={prefersReducedMotion}
             />
           </div>
 
