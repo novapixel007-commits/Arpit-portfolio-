@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import {
   motion,
   useScroll,
@@ -9,26 +9,49 @@ import {
   animate,
 } from "motion/react";
 import { ArrowDown, CheckCircle2 } from "lucide-react";
-import heroMockup from "@/assets/hero-macbook.jpg";
 
+// ─── CONSTANTS ────────────────────────────────────────────────────────────────
 const ease = [0.16, 1, 0.3, 1] as const;
 
-// ─── TRUST BADGES ────────────────────────────────────────────────────────────
 const TRUST = [
-  { label: "20+ Brand Partners" },
+  { label: "Worked with 5 Brands" },
   { label: "100+ Projects Delivered" },
-  { label: "Fast Turnaround" },
+  { label: "Cinematic Editing & Motion Graphics" },
 ];
 
-// ─── MOBILE STATS ────────────────────────────────────────────────────────────
 const STATS = [
   { value: 100, suffix: "+", label: "Projects" },
-  { value: 20, suffix: "+", label: "Brands" },
+  { value: 5, suffix: "+", label: "Brands" },
   { value: 2, suffix: " yrs", label: "Experience" },
   { value: 100, suffix: "+", label: "Videos" },
 ];
 
-// ─── ANIMATED COUNTER ────────────────────────────────────────────────────────
+// Floating skill labels that orbit the MacBook
+const FLOAT_LABELS = [
+  { text: "DaVinci Resolve", x: "-22%", y: "18%",  delay: 0.8,  duration: 6 },
+  { text: "Motion Graphics", x: "88%",  y: "12%",  delay: 1.2,  duration: 7 },
+  { text: "Color Grading",   x: "-18%", y: "72%",  delay: 1.6,  duration: 5.5 },
+  { text: "Fusion VFX",      x: "82%",  y: "68%",  delay: 2.0,  duration: 6.5 },
+  { text: "Commercial Ads",  x: "30%",  y: "-8%",  delay: 1.0,  duration: 7 },
+];
+
+// Fixed particle positions (no Math.random at module level for SSR safety)
+const PARTICLES = [
+  { x: 12,  y: 18,  s: 1.8, d: 12, dl: 0   },
+  { x: 28,  y: 65,  s: 1.2, d: 9,  dl: 2   },
+  { x: 45,  y: 30,  s: 2.0, d: 14, dl: 1   },
+  { x: 60,  y: 80,  s: 1.4, d: 10, dl: 3   },
+  { x: 75,  y: 20,  s: 1.6, d: 11, dl: 0.5 },
+  { x: 88,  y: 55,  s: 1.1, d: 8,  dl: 4   },
+  { x: 33,  y: 88,  s: 2.2, d: 13, dl: 1.5 },
+  { x: 55,  y: 10,  s: 1.3, d: 9,  dl: 2.5 },
+  { x: 8,   y: 45,  s: 1.7, d: 15, dl: 0.8 },
+  { x: 92,  y: 38,  s: 1.5, d: 11, dl: 3.5 },
+  { x: 70,  y: 92,  s: 1.9, d: 12, dl: 1.2 },
+  { x: 18,  y: 76,  s: 1.0, d: 8,  dl: 4.5 },
+];
+
+// ─── ANIMATED COUNTER (mobile) ───────────────────────────────────────────────
 function MobileCounter({ to, suffix }: { to: number; suffix: string }) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true });
@@ -42,37 +65,36 @@ function MobileCounter({ to, suffix }: { to: number; suffix: string }) {
   }, [inView, to, mv]);
   return (
     <span ref={ref} className="tabular-nums font-display font-semibold text-foreground">
-      <motion.span>{rounded}</motion.span>
-      {suffix}
+      <motion.span>{rounded}</motion.span>{suffix}
     </span>
   );
 }
 
-// ─── WORD-BY-WORD STAGGER REVEAL ─────────────────────────────────────────────
-function TextReveal({ text, delay = 0 }: { text: string; delay?: number }) {
-  const words = text.split(" ");
+// ─── LINE REVEAL (per-line stagger) ──────────────────────────────────────────
+function LineReveal({
+  children,
+  delay = 0,
+  className = "",
+}: {
+  children: React.ReactNode;
+  delay?: number;
+  className?: string;
+}) {
   return (
-    <span className="inline-block">
-      {words.map((word, i) => (
-        <span
-          key={i}
-          className="inline-block overflow-hidden mr-[0.22em] py-2 px-1 -my-2 -mx-1"
-        >
-          <motion.span
-            initial={{ y: "110%", rotate: 3, filter: "blur(6px)", opacity: 0 }}
-            animate={{ y: 0, rotate: 0, filter: "blur(0px)", opacity: 1 }}
-            transition={{ duration: 1.2, delay: delay + i * 0.07, ease }}
-            className="inline-block transform-gpu origin-left"
-          >
-            {word}
-          </motion.span>
-        </span>
-      ))}
+    <span className={`block overflow-hidden ${className}`}>
+      <motion.span
+        className="block"
+        initial={{ y: "100%", opacity: 0, filter: "blur(8px)" }}
+        animate={{ y: "0%", opacity: 1, filter: "blur(0px)" }}
+        transition={{ duration: 1.1, delay, ease }}
+      >
+        {children}
+      </motion.span>
     </span>
   );
 }
 
-// ─── MAGNETIC BUTTON WRAPPER ─────────────────────────────────────────────────
+// ─── MAGNETIC BUTTON ─────────────────────────────────────────────────────────
 function MagneticButton({
   children,
   className,
@@ -82,177 +104,389 @@ function MagneticButton({
   className?: string;
   href: string;
 }) {
-  const ref = useRef<HTMLAnchorElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const springX = useSpring(x, { stiffness: 200, damping: 20 });
-  const springY = useSpring(y, { stiffness: 200, damping: 20 });
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    x.set((e.clientX - cx) * 0.35);
-    y.set((e.clientY - cy) * 0.35);
-  };
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
+  const sx = useSpring(x, { stiffness: 180, damping: 18 });
+  const sy = useSpring(y, { stiffness: 180, damping: 18 });
 
   return (
     <motion.a
-      ref={ref}
       href={href}
-      style={{ x: springX, y: springY }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
+      style={{ x: sx, y: sy }}
+      onMouseMove={(e) => {
+        const r = e.currentTarget.getBoundingClientRect();
+        x.set((e.clientX - r.left - r.width / 2) * 0.38);
+        y.set((e.clientY - r.top - r.height / 2) * 0.38);
+      }}
+      onMouseLeave={() => { x.set(0); y.set(0); }}
+      whileTap={{ scale: 0.96 }}
       className={className}
-      whileHover={{ scale: 1.04 }}
-      whileTap={{ scale: 0.97 }}
-      transition={{ type: "spring", stiffness: 300, damping: 20 }}
     >
       {children}
     </motion.a>
   );
 }
 
-// ─── FLOATING PARTICLES ──────────────────────────────────────────────────────
-const PARTICLES = Array.from({ length: 18 }, (_, i) => ({
-  id: i,
-  x: Math.random() * 100,
-  y: Math.random() * 100,
-  size: Math.random() * 2 + 1,
-  duration: Math.random() * 12 + 8,
-  delay: Math.random() * 6,
-}));
+// ─── CSS MACBOOK PRO MOCKUP ───────────────────────────────────────────────────
+function MacBookMockup({
+  rotateX,
+  rotateY,
+  floatY,
+  mouseX,
+  mouseY,
+}: {
+  rotateX: ReturnType<typeof useSpring>;
+  rotateY: ReturnType<typeof useSpring>;
+  floatY: ReturnType<typeof useSpring>;
+  mouseX: ReturnType<typeof useMotionValue>;
+  mouseY: ReturnType<typeof useMotionValue>;
+}) {
+  // Parallax offsets for floating labels
+  const labelX = useSpring(useTransform(mouseX, [-0.5, 0.5], [-8, 8]), { stiffness: 60, damping: 20 });
+  const labelY = useSpring(useTransform(mouseY, [-0.5, 0.5], [-6, 6]), { stiffness: 60, damping: 20 });
 
-// ─── HERO COMPONENT ──────────────────────────────────────────────────────────
+  return (
+    <div className="relative w-full" style={{ perspective: "1200px" }}>
+      {/* ── Screen glow aura ── */}
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          inset: "-15% -10%",
+          background: "radial-gradient(ellipse at 50% 45%, rgba(110,231,255,0.18) 0%, rgba(139,124,255,0.10) 40%, transparent 70%)",
+          filter: "blur(48px)",
+          zIndex: 0,
+        }}
+      />
+
+      {/* ── Breathing shadow ── */}
+      <motion.div
+        className="absolute pointer-events-none"
+        style={{ bottom: "-6%", left: "5%", right: "5%", height: "40px", zIndex: 0 }}
+        animate={{ opacity: [0.35, 0.55, 0.35], scaleX: [0.9, 1, 0.9] }}
+        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            background: "radial-gradient(ellipse at 50% 50%, rgba(0,20,60,0.9) 0%, transparent 70%)",
+            filter: "blur(20px)",
+          }}
+        />
+      </motion.div>
+
+      {/* ── Floating skill labels ── */}
+      {FLOAT_LABELS.map((fl, i) => (
+        <motion.div
+          key={fl.text}
+          className="absolute z-20 pointer-events-none"
+          style={{ left: fl.x, top: fl.y, x: labelX, y: labelY }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: fl.delay + 0.6, duration: 0.7, ease }}
+        >
+          <motion.div
+            animate={{ y: [0, -6, 0] }}
+            transition={{ duration: fl.duration, delay: i * 0.4, repeat: Infinity, ease: "easeInOut" }}
+            className="whitespace-nowrap rounded-full border border-white/12 bg-black/50 backdrop-blur-xl px-3 py-1.5 text-[10px] font-mono text-white/60 tracking-wider shadow-[0_4px_16px_rgba(0,0,0,0.4)]"
+          >
+            {fl.text}
+          </motion.div>
+        </motion.div>
+      ))}
+
+      {/* ── The MacBook shell ── */}
+      <motion.div
+        style={{ rotateX, rotateY, y: floatY, transformStyle: "preserve-3d" }}
+        className="relative z-10 will-change-transform"
+      >
+        {/* Lid (screen) */}
+        <div
+          className="relative mx-auto w-full"
+          style={{
+            // MacBook 16" aspect: lid ~16:10
+            aspectRatio: "16/10",
+            borderRadius: "12px 12px 0 0",
+            background: "linear-gradient(160deg, #2a2a2e 0%, #1a1a1e 60%, #111114 100%)",
+            border: "1.5px solid rgba(255,255,255,0.10)",
+            boxShadow:
+              "0 0 0 1px rgba(0,0,0,0.9), inset 0 0 0 1px rgba(255,255,255,0.04), 0 40px 100px rgba(0,0,0,0.7)",
+            overflow: "hidden",
+          }}
+        >
+          {/* Outer bezel */}
+          <div
+            className="absolute inset-0 rounded-[10px] pointer-events-none"
+            style={{
+              background:
+                "linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 50%)",
+              zIndex: 2,
+            }}
+          />
+
+          {/* Screen surround (bezel) */}
+          <div
+            className="absolute"
+            style={{
+              inset: "4.5%",
+              borderRadius: "6px",
+              overflow: "hidden",
+              background: "#000",
+              zIndex: 1,
+            }}
+          >
+            {/* ── VIDEO fills screen exactly ── */}
+            {/* Ratio trick: 16:9 video inside 16:10 bezel — letterbox with black */}
+            <div className="relative w-full h-full bg-black flex items-center justify-center overflow-hidden">
+              {/* YouTube embed — 16:9 scaled to cover full bezel height */}
+              <iframe
+                src="https://www.youtube.com/embed/4fFSQCw_SOA?autoplay=1&mute=1&loop=1&playlist=4fFSQCw_SOA&controls=0&modestbranding=1&showinfo=0&rel=0&disablekb=1&playsinline=1&iv_load_policy=3&fs=0&cc_load_policy=0&enablejsapi=0"
+                allow="autoplay; encrypted-media; picture-in-picture"
+                className="absolute pointer-events-none"
+                style={{
+                  border: "none",
+                  // Scale up to cover the extra vertical space (16:10 vs 16:9)
+                  // 10/9 = 1.111... so scale by ~1.12 vertically or use w/h trick
+                  width: "178%",
+                  height: "178%",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                }}
+                title="Cinematic reel preview"
+                loading="eager"
+              />
+              {/* Screen glare reflection */}
+              <div
+                className="absolute inset-0 pointer-events-none z-10"
+                style={{
+                  background:
+                    "linear-gradient(135deg, rgba(255,255,255,0.06) 0%, transparent 40%), linear-gradient(225deg, rgba(255,255,255,0.03) 0%, transparent 35%)",
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Notch / camera dot */}
+          <div
+            className="absolute top-[1.8%] left-1/2 -translate-x-1/2 z-10 size-[7px] rounded-full"
+            style={{ background: "#1a1a1e" }}
+          />
+          <div
+            className="absolute top-[1.8%] left-1/2 -translate-x-1/2 z-10 size-[4px] rounded-full translate-y-[1.5px]"
+            style={{ background: "#2c2c30" }}
+          />
+        </div>
+
+        {/* Hinge */}
+        <div
+          style={{
+            height: "6px",
+            background: "linear-gradient(to bottom, #1c1c20, #111)",
+            borderRadius: "0 0 3px 3px",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.8)",
+          }}
+        />
+
+        {/* Base / keyboard deck */}
+        <div
+          style={{
+            height: "28px",
+            borderRadius: "0 0 14px 14px",
+            background: "linear-gradient(160deg, #2c2c30 0%, #1e1e22 50%, #181819 100%)",
+            border: "1.5px solid rgba(255,255,255,0.07)",
+            borderTop: "none",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.6), inset 0 -1px 0 rgba(255,255,255,0.04)",
+            position: "relative",
+          }}
+        >
+          {/* Trackpad hint */}
+          <div
+            className="absolute left-1/2 -translate-x-1/2 top-[30%]"
+            style={{
+              width: "22%",
+              height: "55%",
+              borderRadius: "4px",
+              border: "1px solid rgba(255,255,255,0.08)",
+            }}
+          />
+        </div>
+      </motion.div>
+
+      {/* ── Floating glass badge (Now Playing) ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 12, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ delay: 2.0, duration: 0.8, ease }}
+        className="absolute bottom-[6%] right-[-5%] z-30 pointer-events-none"
+      >
+        <div className="flex items-center gap-2.5 rounded-2xl border border-white/12 bg-black/70 backdrop-blur-2xl px-4 py-3 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+          <span className="relative flex h-2 w-2 shrink-0">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#6EE7FF] opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#6EE7FF]" />
+          </span>
+          <div>
+            <p className="text-[9px] font-mono uppercase tracking-widest text-white/40">Now Playing</p>
+            <p className="text-[11px] font-semibold text-white mt-0.5 whitespace-nowrap">Cinematic Motion System</p>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* ── Second floating label (top-left) ── */}
+      <motion.div
+        initial={{ opacity: 0, x: -12 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 1.8, duration: 0.8, ease }}
+        className="absolute top-[8%] left-[-8%] z-30 pointer-events-none"
+      >
+        <div className="rounded-xl border border-white/12 bg-black/60 backdrop-blur-2xl px-3 py-2 shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
+          <p className="text-[8px] font-mono uppercase tracking-widest text-[#6EE7FF]/70 mb-0.5">Resolution</p>
+          <p className="text-[11px] font-semibold text-white">4K · 60fps</p>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+// ─── HERO ─────────────────────────────────────────────────────────────────────
 export function Hero() {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const cardRef = useRef<HTMLDivElement | null>(null);
-  const videoRef = useRef<HTMLIFrameElement | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [spotlightPos, setSpotlightPos] = useState({ x: 50, y: 50 });
 
   const { scrollY } = useScroll();
-  const textY = useTransform(scrollY, [0, 600], [0, 120]);
-  const textOpacity = useTransform(scrollY, [0, 380], [1, 0]);
-  const imageY = useTransform(scrollY, [0, 600], [0, -50]);
-  const floatY = useTransform(scrollY, [0, 600], [0, 30]);
+  const textY = useTransform(scrollY, [0, 500], [0, 100]);
+  const textOpacity = useTransform(scrollY, [0, 350], [1, 0]);
+  const imageY = useTransform(scrollY, [0, 500], [0, -40]);
 
-  // Mouse tracking for 3D tilt
+  // Mouse-driven values
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [8, -8]), {
-    damping: 30,
-    stiffness: 100,
+
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [6, -6]), {
+    damping: 35,
+    stiffness: 90,
   });
-  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-10, 10]), {
-    damping: 30,
-    stiffness: 100,
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-8, 8]), {
+    damping: 35,
+    stiffness: 90,
   });
 
-  // Breathing / float animation offset
-  const floatOffset = useMotionValue(0);
+  // Autonomous float
+  const rawFloat = useMotionValue(0);
+  const floatY = useSpring(rawFloat, { damping: 16, stiffness: 35 });
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX.set(e.clientX / window.innerWidth - 0.5);
-      mouseY.set(e.clientY / window.innerHeight - 0.5);
-    };
-    window.addEventListener("mousemove", handleMouseMove, { passive: true });
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, [mouseX, mouseY]);
-
-  // Gentle autonomous float loop
   useEffect(() => {
     let frame: number;
     let start: number | null = null;
     const tick = (ts: number) => {
       if (!start) start = ts;
-      const t = (ts - start) / 1000;
-      floatOffset.set(Math.sin(t * 0.6) * 10);
+      rawFloat.set(Math.sin(((ts - start) / 1000) * 0.55) * 12);
       frame = requestAnimationFrame(tick);
     };
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [floatOffset]);
+  }, [rawFloat]);
 
-  const cardFloat = useSpring(floatOffset, { damping: 18, stiffness: 40 });
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const onMove = (e: MouseEvent) => {
+      const nx = e.clientX / window.innerWidth - 0.5;
+      const ny = e.clientY / window.innerHeight - 0.5;
+      mouseX.set(nx);
+      mouseY.set(ny);
+      setSpotlightPos({
+        x: (e.clientX / window.innerWidth) * 100,
+        y: (e.clientY / window.innerHeight) * 100,
+      });
+    };
+    window.addEventListener("mousemove", onMove, { passive: true });
+    return () => window.removeEventListener("mousemove", onMove);
+  }, [mouseX, mouseY]);
 
   return (
     <section
       ref={containerRef}
-      className="relative flex items-center justify-center overflow-hidden min-h-screen lg:min-h-[95vh] pt-16 pb-0 lg:pt-32 lg:pb-20 xl:pt-40"
+      className="relative flex items-center justify-center overflow-hidden min-h-screen lg:min-h-[95vh] pt-16 pb-0 lg:pt-28 lg:pb-16 xl:pt-36"
     >
-      {/* ─── BACKGROUND: animated gradient orbs + particles ─────────────── */}
+      {/* ── BACKGROUND LAYER ─────────────────────────────────────────────── */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-        {/* Animated gradient orbs */}
-        <motion.div
-          animate={{ x: [0, 30, 0], y: [0, -20, 0], scale: [1, 1.08, 1] }}
-          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-[-10%] left-[-5%] w-[55%] h-[70%] rounded-full opacity-30"
-          style={{
-            background:
-              "radial-gradient(ellipse, rgba(0,180,160,0.55) 0%, rgba(0,80,200,0.2) 60%, transparent 80%)",
-            filter: "blur(80px)",
-          }}
-        />
-        <motion.div
-          animate={{ x: [0, -25, 0], y: [0, 18, 0], scale: [1, 1.06, 1] }}
-          transition={{ duration: 22, repeat: Infinity, ease: "easeInOut", delay: 4 }}
-          className="absolute bottom-[-15%] right-[-5%] w-[60%] h-[75%] rounded-full opacity-25"
-          style={{
-            background:
-              "radial-gradient(ellipse, rgba(10,80,240,0.55) 0%, rgba(139,124,255,0.2) 60%, transparent 80%)",
-            filter: "blur(100px)",
-          }}
-        />
-        {/* Subtle light ray */}
+        {/* Mouse-following spotlight */}
         <div
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-[55%] opacity-[0.08]"
+          className="absolute inset-0 transition-opacity duration-300"
           style={{
-            background:
-              "linear-gradient(to bottom, rgba(110,231,255,0.8), transparent)",
+            background: `radial-gradient(600px circle at ${spotlightPos.x}% ${spotlightPos.y}%, rgba(110,231,255,0.04) 0%, transparent 60%)`,
+          }}
+        />
+
+        {/* Animated orb 1 — teal */}
+        <motion.div
+          animate={{ x: [0, 40, 0], y: [0, -24, 0], scale: [1, 1.1, 1] }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute"
+          style={{
+            top: "-15%", left: "-8%",
+            width: "58%", height: "72%",
+            borderRadius: "50%",
+            background: "radial-gradient(ellipse, rgba(0,200,180,0.22) 0%, rgba(0,100,220,0.10) 55%, transparent 80%)",
+            filter: "blur(90px)",
+          }}
+        />
+
+        {/* Animated orb 2 — purple */}
+        <motion.div
+          animate={{ x: [0, -30, 0], y: [0, 22, 0], scale: [1, 1.07, 1] }}
+          transition={{ duration: 26, repeat: Infinity, ease: "easeInOut", delay: 5 }}
+          className="absolute"
+          style={{
+            bottom: "-18%", right: "-8%",
+            width: "62%", height: "78%",
+            borderRadius: "50%",
+            background: "radial-gradient(ellipse, rgba(20,80,255,0.20) 0%, rgba(139,124,255,0.10) 55%, transparent 80%)",
+            filter: "blur(110px)",
+          }}
+        />
+
+        {/* Vertical light ray */}
+        <div
+          className="absolute top-0 left-1/2 -translate-x-1/2"
+          style={{
+            width: "1px",
+            height: "50%",
+            background: "linear-gradient(to bottom, rgba(110,231,255,0.15), transparent)",
+          }}
+        />
+
+        {/* Subtle grain overlay */}
+        <div
+          className="absolute inset-0 opacity-[0.025]"
+          style={{
+            backgroundImage:
+              "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+            backgroundSize: "160px",
           }}
         />
 
         {/* Floating particles */}
-        {PARTICLES.map((p) => (
+        {PARTICLES.map((p, i) => (
           <motion.div
-            key={p.id}
+            key={i}
             className="absolute rounded-full bg-[#6EE7FF]"
-            style={{
-              left: `${p.x}%`,
-              top: `${p.y}%`,
-              width: p.size,
-              height: p.size,
-              opacity: 0.12,
-            }}
-            animate={{
-              y: [-10, 10, -10],
-              opacity: [0.06, 0.18, 0.06],
-            }}
-            transition={{
-              duration: p.duration,
-              delay: p.delay,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
+            style={{ left: `${p.x}%`, top: `${p.y}%`, width: p.s, height: p.s }}
+            animate={{ y: [-8, 8, -8], opacity: [0.06, 0.2, 0.06] }}
+            transition={{ duration: p.d, delay: p.dl, repeat: Infinity, ease: "easeInOut" }}
           />
         ))}
       </div>
 
+      {/* ── CONTENT ──────────────────────────────────────────────────────── */}
       <div className="container-px mx-auto w-full max-w-7xl relative z-10">
 
-        {/* ══════════════════════════════════════════════════════════════════
-            MOBILE LAYOUT  (hidden on lg+)
-        ══════════════════════════════════════════════════════════════════ */}
+        {/* ══ MOBILE ══ (hidden lg+) ═══════════════════════════════════════ */}
         <div className="flex flex-col lg:hidden">
           {/* Badge */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.92 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1, ease }}
             className="inline-flex self-start items-center gap-2 rounded-full border border-border bg-surface/80 backdrop-blur-sm px-3 py-1 text-[10px] font-mono uppercase tracking-widest text-[#6EE7FF]"
           >
@@ -264,59 +498,58 @@ export function Hero() {
           </motion.div>
 
           {/* Headline */}
-          <h1 className="intro-hero-text mt-3 font-display text-[40px] font-semibold leading-[0.98] tracking-tighter text-foreground">
-            <span className="block">
-              <TextReveal text="Cinematic videos" delay={0.2} />
-            </span>
-            <span className="block">
-              <TextReveal text="that people" delay={0.34} />
-            </span>
-            <span className="block bg-gradient-to-r from-[#6EE7FF] to-[#8B7CFF] bg-clip-text text-transparent">
-              <TextReveal text="actually watch." delay={0.48} />
-            </span>
+          <h1 className="intro-hero-text mt-3 font-display text-[40px] font-semibold leading-[0.96] tracking-tighter text-foreground">
+            <LineReveal delay={0.2}>Cinematic videos</LineReveal>
+            <LineReveal delay={0.34}>that people</LineReveal>
+            <LineReveal
+              delay={0.48}
+              className="bg-gradient-to-r from-[#6EE7FF] to-[#8B7CFF] bg-clip-text text-transparent"
+            >
+              actually watch.
+            </LineReveal>
           </h1>
 
-          {/* Sub */}
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.0, ease }}
             className="mt-3 text-[13px] leading-snug text-muted-foreground max-w-[88%]"
           >
-            I create cinematic video edits, motion graphics and commercial content that help founders, creators and brands capture attention and increase retention.
+            I create cinematic video edits, motion graphics and commercial content that help
+            founders, creators and brands capture attention and increase retention.
           </motion.p>
 
-          {/* CTA Buttons */}
+          {/* CTAs */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.15, ease }}
-            className="mt-4 flex items-center gap-2"
+            className="mt-5 flex items-center gap-2"
           >
             <a
               href="#work"
-              className="inline-flex items-center justify-center h-9 rounded-full bg-foreground px-5 text-[11px] font-semibold text-background transition-all duration-300 hover:scale-[1.04] hover:shadow-[0_0_20px_rgba(110,231,255,0.25)] active:scale-[0.97]"
+              className="inline-flex items-center justify-center h-10 rounded-full bg-foreground px-5 text-[11px] font-semibold text-background transition-all duration-300 hover:scale-[1.04] hover:shadow-[0_0_22px_rgba(110,231,255,0.3)] active:scale-[0.97]"
             >
               View Portfolio
             </a>
             <a
               href="#contact"
-              className="inline-flex items-center justify-center h-9 rounded-full border border-border bg-surface/80 backdrop-blur-sm px-5 text-[11px] font-semibold text-foreground transition-all duration-300 hover:scale-[1.04] hover:border-[#6EE7FF]/40 active:scale-[0.97]"
+              className="inline-flex items-center justify-center h-10 rounded-full border border-border bg-surface/80 backdrop-blur-sm px-5 text-[11px] font-semibold text-foreground transition-all duration-300 hover:scale-[1.04] hover:border-[#6EE7FF]/40 active:scale-[0.97]"
             >
               Book a Call
             </a>
           </motion.div>
 
-          {/* Trust badges */}
+          {/* Trust */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 1.3, ease }}
-            className="mt-4 flex flex-wrap gap-x-4 gap-y-1"
+            transition={{ duration: 0.8, delay: 1.35, ease }}
+            className="mt-4 flex flex-col gap-1.5"
           >
             {TRUST.map((t) => (
-              <span key={t.label} className="flex items-center gap-1 text-[9px] text-muted-foreground/70 uppercase tracking-wider">
-                <CheckCircle2 className="size-2.5 text-[#6EE7FF] shrink-0" />
+              <span key={t.label} className="flex items-center gap-1.5 text-[10px] text-muted-foreground/70 uppercase tracking-wider">
+                <CheckCircle2 className="size-3 text-[#6EE7FF] shrink-0" />
                 {t.label}
               </span>
             ))}
@@ -326,12 +559,12 @@ export function Hero() {
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.45, ease }}
+            transition={{ duration: 0.8, delay: 1.5, ease }}
             className="mt-5 grid grid-cols-4 divide-x divide-border rounded-2xl border border-border bg-surface/60 backdrop-blur-sm"
           >
             {STATS.map((s) => (
               <div key={s.label} className="flex flex-col items-center justify-center py-3">
-                <div className="text-[18px] leading-none">
+                <div className="text-[17px] leading-none">
                   <MobileCounter to={s.value} suffix={s.suffix} />
                 </div>
                 <div className="mt-0.5 text-[8px] uppercase tracking-wider text-muted-foreground">{s.label}</div>
@@ -340,21 +573,19 @@ export function Hero() {
           </motion.div>
         </div>
 
-        {/* ══════════════════════════════════════════════════════════════════
-            DESKTOP LAYOUT  (hidden below lg)
-        ══════════════════════════════════════════════════════════════════ */}
-        <div className="hidden lg:grid grid-cols-[1.1fr_0.9fr] items-center gap-16 xl:gap-20">
+        {/* ══ DESKTOP ══ (hidden below lg) ══════════════════════════════════ */}
+        <div className="hidden lg:grid grid-cols-[1fr_1.05fr] items-center gap-12 xl:gap-16">
 
-          {/* Left — Text block */}
+          {/* Left — typography */}
           <motion.div
             style={{ y: textY, opacity: textOpacity }}
-            className="intro-hero-text flex flex-col items-start text-left max-w-3xl will-change-transform"
+            className="intro-hero-text flex flex-col items-start text-left will-change-transform"
           >
-            {/* Status badge */}
+            {/* Badge */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.92 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.1, ease }}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.1, ease }}
               className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/80 backdrop-blur-sm px-4 py-1.5 text-[11px] font-mono uppercase tracking-widest text-[#6EE7FF]"
             >
               <span className="relative flex h-1.5 w-1.5">
@@ -364,177 +595,107 @@ export function Hero() {
               Resolve Editor & Motion Designer
             </motion.div>
 
-            {/* Headline — 3 lines, big, bold, expressive */}
-            <h1 className="mt-7 font-display text-[clamp(2.8rem,6.2vw,5.6rem)] font-semibold leading-[0.98] tracking-tighter text-foreground text-balance">
-              <span className="block">
-                <TextReveal text="Cinematic videos" delay={0.2} />
-              </span>
-              <span className="block">
-                <TextReveal text="that people" delay={0.34} />
-              </span>
-              <span className="block bg-gradient-to-r from-[#6EE7FF] via-[#8B7CFF] to-[#6EE7FF] bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
-                <TextReveal text="actually watch." delay={0.5} />
-              </span>
+            {/* Headline — line-by-line reveal */}
+            <h1 className="mt-6 font-display text-[clamp(3rem,5.8vw,5.6rem)] font-semibold leading-[0.96] tracking-tighter text-foreground">
+              <LineReveal delay={0.22}>Cinematic videos</LineReveal>
+              <LineReveal delay={0.36}>that people</LineReveal>
+              <LineReveal
+                delay={0.50}
+                className="bg-gradient-to-r from-[#6EE7FF] via-[#8B7CFF] to-[#6EE7FF] bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient"
+              >
+                actually watch.
+              </LineReveal>
             </h1>
 
             {/* Description */}
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 1.1, ease }}
-              className="mt-7 max-w-[480px] text-[16px] leading-relaxed text-muted-foreground"
+              transition={{ duration: 0.9, delay: 1.1, ease }}
+              className="mt-6 max-w-[440px] text-[15.5px] leading-relaxed text-muted-foreground"
             >
               I create cinematic video edits, motion graphics and commercial content
               that help founders, creators and brands capture attention and increase retention.
             </motion.p>
 
-            {/* CTA Buttons — magnetic */}
+            {/* CTA Buttons — magnetic + shine */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 1.3, ease }}
-              className="mt-8 flex flex-wrap items-center gap-3"
+              transition={{ duration: 0.9, delay: 1.28, ease }}
+              className="mt-7 flex flex-wrap items-center gap-3"
             >
               <MagneticButton
                 href="#work"
-                className="relative inline-flex items-center justify-center overflow-hidden rounded-full bg-foreground px-8 py-4 text-[13px] font-semibold text-background transition-shadow duration-300 hover:shadow-[0_0_28px_rgba(110,231,255,0.3)] group"
+                className="group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-foreground px-8 py-3.5 text-[13px] font-semibold text-background transition-shadow duration-300 hover:shadow-[0_0_32px_rgba(110,231,255,0.35)]"
               >
                 <span className="relative z-10">View Portfolio</span>
-                {/* Shine sweep */}
-                <span className="absolute inset-0 -translate-x-full skew-x-[-20deg] bg-gradient-to-r from-transparent via-white/15 to-transparent group-hover:translate-x-full transition-transform duration-700 ease-out" />
+                <span className="absolute inset-0 -translate-x-full skew-x-[-18deg] bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:translate-x-full transition-transform duration-600 ease-out" />
               </MagneticButton>
 
               <MagneticButton
                 href="#contact"
-                className="relative inline-flex items-center justify-center overflow-hidden rounded-full border border-border bg-surface/80 backdrop-blur-sm px-8 py-4 text-[13px] font-semibold text-foreground transition-all duration-300 hover:border-[#6EE7FF]/40 hover:shadow-[0_0_20px_rgba(110,231,255,0.1)] group"
+                className="group relative inline-flex items-center justify-center overflow-hidden rounded-full border border-border bg-surface/80 backdrop-blur-sm px-8 py-3.5 text-[13px] font-semibold text-foreground transition-all duration-300 hover:border-[#6EE7FF]/40 hover:shadow-[0_0_24px_rgba(110,231,255,0.12)]"
               >
                 <span className="relative z-10">Book a Call</span>
-                <span className="absolute inset-0 -translate-x-full skew-x-[-20deg] bg-gradient-to-r from-transparent via-white/8 to-transparent group-hover:translate-x-full transition-transform duration-700 ease-out" />
+                <span className="absolute inset-0 -translate-x-full skew-x-[-18deg] bg-gradient-to-r from-transparent via-white/8 to-transparent group-hover:translate-x-full transition-transform duration-600 ease-out" />
               </MagneticButton>
             </motion.div>
 
-            {/* Trust badges */}
+            {/* Trust row */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 1.5, ease }}
-              className="mt-6 flex flex-wrap gap-x-5 gap-y-2"
+              className="mt-6 flex flex-col gap-2"
             >
-              {TRUST.map((t) => (
-                <span key={t.label} className="flex items-center gap-1.5 text-[11px] text-muted-foreground/70 uppercase tracking-wider">
-                  <CheckCircle2 className="size-3 text-[#6EE7FF] shrink-0" />
+              {TRUST.map((t, i) => (
+                <motion.span
+                  key={t.label}
+                  initial={{ opacity: 0, x: -8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 1.55 + i * 0.08, duration: 0.5, ease }}
+                  className="flex items-center gap-2 text-[11.5px] text-muted-foreground/75 tracking-wide"
+                >
+                  <CheckCircle2 className="size-3.5 text-[#6EE7FF] shrink-0" />
                   {t.label}
-                </span>
+                </motion.span>
               ))}
             </motion.div>
           </motion.div>
 
-          {/* Right — 3D floating laptop card */}
+          {/* Right — MacBook */}
           <motion.div
             style={{ y: imageY }}
-            initial={{ opacity: 0, scale: 0.92, y: 60 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 1.6, delay: 0.4, ease }}
-            className="intro-hero-image relative w-full aspect-[4/5] max-w-md ml-auto select-none will-change-transform"
+            initial={{ opacity: 0, y: 60, scale: 0.92 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 1.6, delay: 0.3, ease }}
+            className="intro-hero-image relative select-none will-change-transform px-8 xl:px-6"
           >
-            {/* Outer glow aura behind the card */}
-            <div
-              className="absolute inset-[-8%] rounded-[3rem] pointer-events-none"
-              style={{
-                background:
-                  "radial-gradient(ellipse at 50% 60%, rgba(110,231,255,0.12) 0%, rgba(139,124,255,0.08) 40%, transparent 70%)",
-                filter: "blur(32px)",
-              }}
+            <MacBookMockup
+              rotateX={rotateX}
+              rotateY={rotateY}
+              floatY={floatY}
+              mouseX={mouseX}
+              mouseY={mouseY}
             />
-
-            {/* Card with float + 3D tilt */}
-            <motion.div
-              ref={cardRef}
-              style={{
-                rotateX,
-                rotateY,
-                y: cardFloat,
-                transformStyle: "preserve-3d",
-                perspective: 1000,
-              }}
-              className="relative size-full rounded-[2.5rem] overflow-hidden border border-white/10 bg-surface group shadow-[0_32px_80px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.06)]"
-            >
-              {/* Static mockup — always visible as base */}
-              <img
-                src={heroMockup}
-                alt="Cinematic editing timeline"
-                className="absolute inset-0 size-full object-cover pointer-events-none"
-              />
-
-              {/* YouTube muted autoplay embed — fills screen, no controls */}
-              <iframe
-                src="https://www.youtube.com/embed/4fFSQCw_SOA?autoplay=1&mute=1&loop=1&playlist=4fFSQCw_SOA&controls=0&modestbranding=1&showinfo=0&rel=0&disablekb=1&playsinline=1&iv_load_policy=3&fs=0&cc_load_policy=0"
-                allow="autoplay; encrypted-media"
-                className="absolute inset-0 size-full pointer-events-none"
-                style={{ border: "none" }}
-                title="Cinematic reel preview"
-                loading="lazy"
-              />
-
-              {/* Top glare reflection */}
-              <div
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                  background:
-                    "linear-gradient(135deg, rgba(255,255,255,0.07) 0%, transparent 45%)",
-                }}
-              />
-
-              {/* Bottom vignette */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent pointer-events-none" />
-
-              {/* Hover border glow */}
-              <div className="absolute inset-0 rounded-[2.5rem] border border-transparent group-hover:border-[#6EE7FF]/25 transition-colors duration-500 pointer-events-none" />
-
-              {/* Floating glass badge at bottom */}
-              <motion.div
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.6, duration: 0.8, ease }}
-                className="absolute bottom-5 left-5 right-5 p-4 rounded-2xl bg-black/60 backdrop-blur-xl border border-white/10 flex items-center justify-between"
-                style={{ transform: "translateZ(20px)" }}
-              >
-                <div className="flex items-center gap-2.5">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#6EE7FF] opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#6EE7FF]" />
-                  </span>
-                  <div className="text-left">
-                    <span className="block text-[9px] font-mono uppercase tracking-widest text-white/50">
-                      Now Playing
-                    </span>
-                    <span className="block text-[12px] font-medium text-white mt-0.5">
-                      Cinematic Motion System
-                    </span>
-                  </div>
-                </div>
-                <div className="text-[9px] font-mono text-[#6EE7FF] uppercase tracking-widest">
-                  Live Preview
-                </div>
-              </motion.div>
-            </motion.div>
           </motion.div>
 
         </div>
 
-        {/* ─── SCROLL INDICATOR (desktop only) ─────────────────────────── */}
+        {/* ── SCROLL INDICATOR (desktop only) ───────────────────────────── */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 2.2, duration: 1 }}
-          className="hidden lg:flex absolute bottom-8 left-1/2 -translate-x-1/2 flex-col items-center gap-1 text-muted-foreground/40"
+          transition={{ delay: 2.4, duration: 1 }}
+          className="hidden lg:flex absolute bottom-4 left-1/2 -translate-x-1/2 flex-col items-center gap-1.5 text-muted-foreground/35"
         >
-          <span className="text-[9px] font-mono uppercase tracking-[0.2em]">Scroll</span>
+          <span className="text-[8.5px] font-mono uppercase tracking-[0.22em]">Scroll</span>
           <motion.div
-            animate={{ y: [0, 6, 0] }}
-            transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+            animate={{ y: [0, 5, 0] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
           >
-            <ArrowDown className="size-3.5" />
+            <ArrowDown className="size-3" />
           </motion.div>
         </motion.div>
 
