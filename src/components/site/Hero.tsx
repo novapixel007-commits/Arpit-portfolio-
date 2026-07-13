@@ -8,7 +8,7 @@ import {
   useInView,
   animate,
 } from "motion/react";
-import { ArrowDown, CheckCircle2 } from "lucide-react";
+import { ArrowDown, CheckCircle2, Play } from "lucide-react";
 
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
 const ease = [0.16, 1, 0.3, 1] as const;
@@ -26,16 +26,7 @@ const STATS = [
   { value: 100, suffix: "+", label: "Videos" },
 ];
 
-// Floating skill labels that orbit the MacBook
-const FLOAT_LABELS = [
-  { text: "DaVinci Resolve", x: "-22%", y: "18%",  delay: 0.8,  duration: 6 },
-  { text: "Motion Graphics", x: "88%",  y: "12%",  delay: 1.2,  duration: 7 },
-  { text: "Color Grading",   x: "-18%", y: "72%",  delay: 1.6,  duration: 5.5 },
-  { text: "Fusion VFX",      x: "82%",  y: "68%",  delay: 2.0,  duration: 6.5 },
-  { text: "Commercial Ads",  x: "30%",  y: "-8%",  delay: 1.0,  duration: 7 },
-];
-
-// Fixed particle positions (no Math.random at module level for SSR safety)
+// Fixed particle positions for SSR safety
 const PARTICLES = [
   { x: 12,  y: 18,  s: 1.8, d: 12, dl: 0   },
   { x: 28,  y: 65,  s: 1.2, d: 9,  dl: 2   },
@@ -70,7 +61,7 @@ function MobileCounter({ to, suffix }: { to: number; suffix: string }) {
   );
 }
 
-// ─── LINE REVEAL (per-line stagger) ──────────────────────────────────────────
+// ─── LINE REVEAL ─────────────────────────────────────────────────────────────
 function LineReveal({
   children,
   delay = 0,
@@ -127,7 +118,51 @@ function MagneticButton({
   );
 }
 
-// ─── CSS MACBOOK PRO MOCKUP ───────────────────────────────────────────────────
+// ─── FLOATING SKILL TAG COMPONENT ─────────────────────────────────────────────
+function FloatingTag({
+  text,
+  className = "",
+  style = {},
+  delay = 0,
+  duration = 6,
+  mouseX,
+  mouseY,
+  parallaxMultiplier = 1,
+}: {
+  text: string;
+  className?: string;
+  style?: React.CSSProperties;
+  delay?: number;
+  duration?: number;
+  mouseX: ReturnType<typeof useMotionValue>;
+  mouseY: ReturnType<typeof useMotionValue>;
+  parallaxMultiplier?: number;
+}) {
+  const pX = useSpring(useTransform(mouseX, [-0.5, 0.5], [-25 * parallaxMultiplier, 25 * parallaxMultiplier]), { stiffness: 50, damping: 22 });
+  const pY = useSpring(useTransform(mouseY, [-0.5, 0.5], [-20 * parallaxMultiplier, 20 * parallaxMultiplier]), { stiffness: 50, damping: 22 });
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay: delay + 0.5, duration: 0.8, ease }}
+      style={{ ...style, x: pX, y: pY }}
+      className={`absolute z-30 pointer-events-auto ${className}`}
+    >
+      <motion.div
+        animate={{ y: [0, -5, 0] }}
+        transition={{ duration, repeat: Infinity, ease: "easeInOut" }}
+        whileHover={{ scale: 1.05 }}
+        className="flex items-center gap-2 whitespace-nowrap rounded-[14px] border border-white/10 bg-[#0f121c]/65 backdrop-blur-md px-3.5 py-2 text-[11px] font-mono text-white/80 tracking-wider shadow-[0_4px_20px_rgba(0,0,0,0.35)] transition-shadow duration-300 hover:shadow-[0_0_20px_rgba(110,231,255,0.15)] cursor-default"
+      >
+        <span className="size-1.5 rounded-full bg-[#6EE7FF] inline-block shrink-0 shadow-[0_0_6px_#6EE7FF]" />
+        {text}
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// ─── CSS MACBOOK PRO MOCKUP (REDESIGNED) ──────────────────────────────────────
 function MacBookMockup({
   rotateX,
   rotateY,
@@ -141,127 +176,142 @@ function MacBookMockup({
   mouseX: ReturnType<typeof useMotionValue>;
   mouseY: ReturnType<typeof useMotionValue>;
 }) {
-  // Parallax offsets for floating labels
-  const labelX = useSpring(useTransform(mouseX, [-0.5, 0.5], [-8, 8]), { stiffness: 60, damping: 20 });
-  const labelY = useSpring(useTransform(mouseY, [-0.5, 0.5], [-6, 6]), { stiffness: 60, damping: 20 });
+  const laptopX = useSpring(useTransform(mouseX, [-0.5, 0.5], [-8, 8]), { stiffness: 60, damping: 20 });
+  const laptopY = useSpring(useTransform(mouseY, [-0.5, 0.5], [-6, 6]), { stiffness: 60, damping: 20 });
 
   return (
-    <div className="relative w-full" style={{ perspective: "1200px" }}>
-      {/* ── Screen glow aura ── */}
+    <div className="relative w-full max-w-[760px] mx-auto" style={{ perspective: "1500px" }}>
+      
+      {/* ── Premium Ambient Background Radial Glow ── */}
       <div
         className="absolute pointer-events-none"
         style={{
-          inset: "-15% -10%",
-          background: "radial-gradient(ellipse at 50% 45%, rgba(110,231,255,0.18) 0%, rgba(139,124,255,0.10) 40%, transparent 70%)",
-          filter: "blur(48px)",
+          inset: "-20% -15%",
+          background: "radial-gradient(ellipse at 50% 50%, rgba(110,231,255,0.22) 0%, rgba(139,124,255,0.08) 45%, transparent 75%)",
+          filter: "blur(56px)",
           zIndex: 0,
         }}
       />
 
-      {/* ── Breathing shadow ── */}
+      {/* ── Realistic drop shadow beneath laptop ── */}
       <motion.div
         className="absolute pointer-events-none"
-        style={{ bottom: "-6%", left: "5%", right: "5%", height: "40px", zIndex: 0 }}
-        animate={{ opacity: [0.35, 0.55, 0.35], scaleX: [0.9, 1, 0.9] }}
+        style={{ bottom: "-5%", left: "8%", right: "8%", height: "24px", zIndex: 0 }}
+        animate={{ opacity: [0.4, 0.6, 0.4], scaleX: [0.95, 1.02, 0.95] }}
         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       >
         <div
           style={{
             width: "100%",
             height: "100%",
-            background: "radial-gradient(ellipse at 50% 50%, rgba(0,20,60,0.9) 0%, transparent 70%)",
-            filter: "blur(20px)",
+            background: "radial-gradient(ellipse at 50% 50%, rgba(0,10,40,0.85) 0%, transparent 75%)",
+            filter: "blur(16px)",
           }}
         />
       </motion.div>
 
-      {/* ── Floating skill labels ── */}
-      {FLOAT_LABELS.map((fl, i) => (
-        <motion.div
-          key={fl.text}
-          className="absolute z-20 pointer-events-none"
-          style={{ left: fl.x, top: fl.y, x: labelX, y: labelY }}
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: fl.delay + 0.6, duration: 0.7, ease }}
-        >
-          <motion.div
-            animate={{ y: [0, -6, 0] }}
-            transition={{ duration: fl.duration, delay: i * 0.4, repeat: Infinity, ease: "easeInOut" }}
-            className="whitespace-nowrap rounded-full border border-white/12 bg-black/50 backdrop-blur-xl px-3 py-1.5 text-[10px] font-mono text-white/60 tracking-wider shadow-[0_4px_16px_rgba(0,0,0,0.4)]"
-          >
-            {fl.text}
-          </motion.div>
-        </motion.div>
-      ))}
+      {/* ── Redesigned 5 Floating Skill Tags (Orbital layout with 40-70px gap) ── */}
+      {/* Top Center: Commercial Ads */}
+      <FloatingTag
+        text="Commercial Ads"
+        style={{ top: "-15%", left: "50%", transform: "translateX(-50%)" }}
+        delay={0.6}
+        duration={6}
+        mouseX={mouseX}
+        mouseY={mouseY}
+        parallaxMultiplier={1.4}
+      />
+      {/* Top Left: DaVinci Resolve */}
+      <FloatingTag
+        text="DaVinci Resolve"
+        style={{ top: "0%", left: "-18%" }}
+        delay={0.8}
+        duration={5.5}
+        mouseX={mouseX}
+        mouseY={mouseY}
+        parallaxMultiplier={1.1}
+      />
+      {/* Upper Right: Motion Graphics */}
+      <FloatingTag
+        text="Motion Graphics"
+        style={{ top: "8%", right: "-18%" }}
+        delay={1.0}
+        duration={6.5}
+        mouseX={mouseX}
+        mouseY={mouseY}
+        parallaxMultiplier={1.2}
+      />
+      {/* Bottom Left: Color Grading */}
+      <FloatingTag
+        text="Color Grading"
+        style={{ bottom: "5%", left: "-16%" }}
+        delay={1.2}
+        duration={5}
+        mouseX={mouseX}
+        mouseY={mouseY}
+        parallaxMultiplier={1.3}
+      />
+      {/* Bottom Right: 4K • 60fps */}
+      <FloatingTag
+        text="4K • 60fps"
+        style={{ bottom: "12%", right: "-16%" }}
+        delay={1.4}
+        duration={7}
+        mouseX={mouseX}
+        mouseY={mouseY}
+        parallaxMultiplier={1.0}
+      />
 
-      {/* ── The MacBook shell ── */}
+      {/* ── Laptop frame with Parallax & Tilt ── */}
       <motion.div
-        style={{ rotateX, rotateY, y: floatY, transformStyle: "preserve-3d" }}
-        className="relative z-10 will-change-transform"
+        style={{ rotateX, rotateY, x: laptopX, y: laptopY, transformStyle: "preserve-3d" }}
+        className="relative z-10 will-change-transform transition-all"
       >
-        {/* Lid (screen) */}
+        {/* Lid (screen) with 16:9 proportion */}
         <div
-          className="relative mx-auto w-full"
+          className="relative mx-auto w-full overflow-hidden transition-all"
           style={{
-            // MacBook 16" aspect: lid ~16:10
-            aspectRatio: "16/10",
-            borderRadius: "12px 12px 0 0",
-            background: "linear-gradient(160deg, #2a2a2e 0%, #1a1a1e 60%, #111114 100%)",
-            border: "1.5px solid rgba(255,255,255,0.10)",
+            aspectRatio: "16/9.8", // realistic laptop frame aspect
+            borderRadius: "10px 10px 0 0",
+            background: "linear-gradient(160deg, #2e2e32 0%, #17171a 60%, #0d0d0f 100%)",
+            border: "1.2px solid rgba(255,255,255,0.12)",
             boxShadow:
-              "0 0 0 1px rgba(0,0,0,0.9), inset 0 0 0 1px rgba(255,255,255,0.04), 0 40px 100px rgba(0,0,0,0.7)",
-            overflow: "hidden",
+              "0 0 0 1.5px rgba(0,0,0,0.95), inset 0 0 0 1px rgba(255,255,255,0.06), 0 30px 80px rgba(0,0,0,0.65)",
           }}
         >
-          {/* Outer bezel */}
-          <div
-            className="absolute inset-0 rounded-[10px] pointer-events-none"
-            style={{
-              background:
-                "linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 50%)",
-              zIndex: 2,
-            }}
-          />
-
-          {/* Screen surround (bezel) */}
+          {/* Inner bezel wrapper — reduced from 4.5% to 2.8% bezel thickness for edge-to-edge feel */}
           <div
             className="absolute"
             style={{
-              inset: "4.5%",
-              borderRadius: "6px",
+              inset: "2.8%",
+              borderRadius: "4px",
               overflow: "hidden",
               background: "#000",
               zIndex: 1,
             }}
           >
-            {/* ── VIDEO fills screen exactly ── */}
-            {/* Ratio trick: 16:9 video inside 16:10 bezel — letterbox with black */}
+            {/* Screen Content */}
             <div className="relative w-full h-full bg-black flex items-center justify-center overflow-hidden">
-              {/* YouTube embed — 16:9 scaled to cover full bezel height */}
               <iframe
                 src="https://www.youtube.com/embed/4fFSQCw_SOA?autoplay=1&mute=1&loop=1&playlist=4fFSQCw_SOA&controls=0&modestbranding=1&showinfo=0&rel=0&disablekb=1&playsinline=1&iv_load_policy=3&fs=0&cc_load_policy=0&enablejsapi=0"
                 allow="autoplay; encrypted-media; picture-in-picture"
                 className="absolute pointer-events-none"
                 style={{
                   border: "none",
-                  // Scale up to cover the extra vertical space (16:10 vs 16:9)
-                  // 10/9 = 1.111... so scale by ~1.12 vertically or use w/h trick
-                  width: "178%",
-                  height: "178%",
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
                 }}
                 title="Cinematic reel preview"
                 loading="eager"
               />
-              {/* Screen glare reflection */}
+              
+              {/* Screen soft ambient glow reflection */}
               <div
                 className="absolute inset-0 pointer-events-none z-10"
                 style={{
                   background:
-                    "linear-gradient(135deg, rgba(255,255,255,0.06) 0%, transparent 40%), linear-gradient(225deg, rgba(255,255,255,0.03) 0%, transparent 35%)",
+                    "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 45%), linear-gradient(225deg, rgba(255,255,255,0.04) 0%, transparent 35%)",
                 }}
               />
             </div>
@@ -269,81 +319,52 @@ function MacBookMockup({
 
           {/* Notch / camera dot */}
           <div
-            className="absolute top-[1.8%] left-1/2 -translate-x-1/2 z-10 size-[7px] rounded-full"
-            style={{ background: "#1a1a1e" }}
-          />
-          <div
-            className="absolute top-[1.8%] left-1/2 -translate-x-1/2 z-10 size-[4px] rounded-full translate-y-[1.5px]"
-            style={{ background: "#2c2c30" }}
+            className="absolute top-[1.2%] left-1/2 -translate-x-1/2 z-10 size-[5px] rounded-full"
+            style={{ background: "#0d0d0f" }}
           />
         </div>
 
         {/* Hinge */}
         <div
           style={{
-            height: "6px",
-            background: "linear-gradient(to bottom, #1c1c20, #111)",
-            borderRadius: "0 0 3px 3px",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.8)",
+            height: "5px",
+            background: "linear-gradient(to bottom, #1f1f24, #0d0d10)",
+            borderRadius: "0 0 2px 2px",
+            boxShadow: "0 1.5px 6px rgba(0,0,0,0.85)",
           }}
         />
 
         {/* Base / keyboard deck */}
         <div
           style={{
-            height: "28px",
-            borderRadius: "0 0 14px 14px",
-            background: "linear-gradient(160deg, #2c2c30 0%, #1e1e22 50%, #181819 100%)",
-            border: "1.5px solid rgba(255,255,255,0.07)",
+            height: "20px",
+            borderRadius: "0 0 10px 10px",
+            background: "linear-gradient(160deg, #2f2f33 0%, #1d1d21 50%, #141416 100%)",
+            border: "1.2px solid rgba(255,255,255,0.08)",
             borderTop: "none",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.6), inset 0 -1px 0 rgba(255,255,255,0.04)",
+            boxShadow: "0 6px 24px rgba(0,0,0,0.55)",
             position: "relative",
           }}
         >
           {/* Trackpad hint */}
           <div
-            className="absolute left-1/2 -translate-x-1/2 top-[30%]"
+            className="absolute left-1/2 -translate-x-1/2 top-[25%]"
             style={{
-              width: "22%",
-              height: "55%",
-              borderRadius: "4px",
-              border: "1px solid rgba(255,255,255,0.08)",
+              width: "20%",
+              height: "50%",
+              borderRadius: "3px",
+              border: "1px solid rgba(255,255,255,0.07)",
             }}
           />
         </div>
       </motion.div>
 
-      {/* ── Floating glass badge (Now Playing) ── */}
-      <motion.div
-        initial={{ opacity: 0, y: 12, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ delay: 2.0, duration: 0.8, ease }}
-        className="absolute bottom-[6%] right-[-5%] z-30 pointer-events-none"
-      >
-        <div className="flex items-center gap-2.5 rounded-2xl border border-white/12 bg-black/70 backdrop-blur-2xl px-4 py-3 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
-          <span className="relative flex h-2 w-2 shrink-0">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#6EE7FF] opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#6EE7FF]" />
-          </span>
-          <div>
-            <p className="text-[9px] font-mono uppercase tracking-widest text-white/40">Now Playing</p>
-            <p className="text-[11px] font-semibold text-white mt-0.5 whitespace-nowrap">Cinematic Motion System</p>
-          </div>
+      {/* ── Centered Play Control Overlay (clean, centered, low opacity until hover) ── */}
+      <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+        <div className="size-16 rounded-full bg-black/40 border border-white/10 backdrop-blur-md flex items-center justify-center opacity-30 hover:opacity-100 transition-opacity duration-300 pointer-events-auto cursor-pointer">
+          <Play className="size-5 fill-white text-white translate-x-[1px]" />
         </div>
-      </motion.div>
-
-      {/* ── Second floating label (top-left) ── */}
-      <motion.div
-        initial={{ opacity: 0, x: -12 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 1.8, duration: 0.8, ease }}
-        className="absolute top-[8%] left-[-8%] z-30 pointer-events-none"
-      >
-        <div className="rounded-xl border border-white/12 bg-black/60 backdrop-blur-2xl px-3 py-2 shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
-          <p className="text-[8px] font-mono uppercase tracking-widest text-[#6EE7FF]/70 mb-0.5">Resolution</p>
-          <p className="text-[11px] font-semibold text-white">4K · 60fps</p>
-        </div>
-      </motion.div>
+      </div>
     </div>
   );
 }
@@ -356,17 +377,18 @@ export function Hero() {
   const { scrollY } = useScroll();
   const textY = useTransform(scrollY, [0, 500], [0, 100]);
   const textOpacity = useTransform(scrollY, [0, 350], [1, 0]);
-  const imageY = useTransform(scrollY, [0, 500], [0, -40]);
+  const imageY = useTransform(scrollY, [0, 500], [0, -30]);
 
   // Mouse-driven values
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [6, -6]), {
+  // Balanced 2.5 degree maximum tilt
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [2.5, -2.5]), {
     damping: 35,
     stiffness: 90,
   });
-  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-8, 8]), {
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-2.5, 2.5]), {
     damping: 35,
     stiffness: 90,
   });
@@ -380,7 +402,7 @@ export function Hero() {
     let start: number | null = null;
     const tick = (ts: number) => {
       if (!start) start = ts;
-      rawFloat.set(Math.sin(((ts - start) / 1000) * 0.55) * 12);
+      rawFloat.set(Math.sin(((ts - start) / 1000) * 0.55) * 8);
       frame = requestAnimationFrame(tick);
     };
     frame = requestAnimationFrame(tick);
@@ -574,12 +596,13 @@ export function Hero() {
         </div>
 
         {/* ══ DESKTOP ══ (hidden below lg) ══════════════════════════════════ */}
-        <div className="hidden lg:grid grid-cols-[1fr_1.05fr] items-center gap-12 xl:gap-16">
+        {/* Changed grid layout columns ratio from 1fr_1.05fr to 1fr_1.35fr to make laptop 30-40% wider and visual focal point */}
+        <div className="hidden lg:grid grid-cols-[1fr_1.35fr] items-center gap-16 xl:gap-20">
 
           {/* Left — typography */}
           <motion.div
             style={{ y: textY, opacity: textOpacity }}
-            className="intro-hero-text flex flex-col items-start text-left will-change-transform"
+            className="intro-hero-text flex flex-col items-start text-left will-change-transform pr-4"
           >
             {/* Badge */}
             <motion.div
@@ -596,7 +619,7 @@ export function Hero() {
             </motion.div>
 
             {/* Headline — line-by-line reveal */}
-            <h1 className="mt-6 font-display text-[clamp(3rem,5.8vw,5.6rem)] font-semibold leading-[0.96] tracking-tighter text-foreground">
+            <h1 className="mt-6 font-display text-[clamp(2.8rem,5vw,5rem)] font-bold leading-[0.96] tracking-tighter text-foreground">
               <LineReveal delay={0.22}>Cinematic videos</LineReveal>
               <LineReveal delay={0.36}>that people</LineReveal>
               <LineReveal
@@ -664,13 +687,13 @@ export function Hero() {
             </motion.div>
           </motion.div>
 
-          {/* Right — MacBook */}
+          {/* Right — MacBook (Shifted slightly toward right edge using justify-self-end) */}
           <motion.div
             style={{ y: imageY }}
             initial={{ opacity: 0, y: 60, scale: 0.92 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 1.6, delay: 0.3, ease }}
-            className="intro-hero-image relative select-none will-change-transform px-8 xl:px-6"
+            className="intro-hero-image justify-self-end w-full select-none will-change-transform pl-4"
           >
             <MacBookMockup
               rotateX={rotateX}
