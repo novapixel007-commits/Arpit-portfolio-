@@ -161,16 +161,16 @@ export function About() {
               <h3 className="font-display text-xs uppercase tracking-[0.2em] text-[#8B7CFF] font-semibold">
                 Resolve finishing
               </h3>
-              <div className="flex flex-wrap gap-2 lg:gap-4 mt-4">
+              <div className="flex overflow-x-auto snap-x snap-mandatory gap-3 pb-4 lg:grid lg:grid-cols-2 lg:gap-4 lg:pb-0 scrollbar-hide -mx-4 px-4 lg:mx-0 lg:px-0 mt-4 lg:mt-6">
                 {SOFTWARE.map((tech, idx) => (
                   <motion.div
                     key={tech.name}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6, delay: idx * 0.08 }}
                     whileHover={{ borderColor: "rgba(110, 231, 255, 0.4)", y: -3 }}
-                    className="flex-1 min-w-[130px] lg:min-w-[140px] h-[100px] lg:h-auto lg:max-h-none rounded-xl border border-border bg-card p-4 lg:p-5 flex flex-col justify-between transition-all duration-300 hover:shadow-[0_0_20px_rgba(110,231,255,0.03)] cursor-default"
+                    className="flex-none snap-center w-[75vw] sm:w-[45vw] lg:w-auto h-[100px] lg:h-auto lg:max-h-none rounded-xl border border-border bg-card p-4 lg:p-5 flex flex-col justify-between transition-all duration-300 hover:shadow-[0_0_20px_rgba(110,231,255,0.03)] cursor-default"
                   >
                     <span className="font-display text-[13px] lg:text-[14px] font-semibold text-foreground">
                       {tech.name}

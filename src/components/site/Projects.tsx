@@ -44,7 +44,7 @@ function ProjectCard({ project, index, isPlaying, onPlay }: ProjectCardProps) {
       className={`group flex flex-col select-none ${
         isHorizontal 
           ? "w-full col-span-1 md:col-span-2" 
-          : "col-span-1 w-[88%] max-w-[320px] mx-auto lg:w-full lg:max-w-none lg:mx-0"
+          : "w-full col-span-1 mx-auto md:mx-0"
       }`}
     >
       {/* Video frame — zero text overlays inside */}
@@ -167,9 +167,9 @@ export function Projects() {
         </div>
 
         {/* Asymmetric Magazine Poster Layout Grid — exactly 6 cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8 lg:gap-y-14 items-start">
+        <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-6 md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-8 lg:gap-y-14 items-start -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide">
           {/* Card 1: Horizontal */}
-          <div className="md:col-span-2">
+          <div className="w-[85vw] md:w-auto flex-none snap-center md:col-span-2">
             <ProjectCard
               project={PROJECTS[0]}
               index={0}
@@ -179,7 +179,7 @@ export function Projects() {
           </div>
 
           {/* Card 2: Vertical (offset top) */}
-          <div className="md:mt-12">
+          <div className="w-[75vw] md:w-auto flex-none snap-center md:mt-12">
             <ProjectCard
               project={PROJECTS[1]}
               index={1}
@@ -189,7 +189,7 @@ export function Projects() {
           </div>
 
           {/* Card 3: Vertical */}
-          <div className="md:mt-0">
+          <div className="w-[75vw] md:w-auto flex-none snap-center md:mt-0">
             <ProjectCard
               project={PROJECTS[2]}
               index={2}
@@ -199,7 +199,7 @@ export function Projects() {
           </div>
 
           {/* Card 4: Horizontal */}
-          <div className="md:col-span-2 md:py-8">
+          <div className="w-[85vw] md:w-auto flex-none snap-center md:col-span-2 md:py-8">
             <ProjectCard
               project={PROJECTS[3]}
               index={3}
@@ -209,7 +209,7 @@ export function Projects() {
           </div>
 
           {/* Card 5: Vertical (offset top) */}
-          <div className="md:mt-12">
+          <div className="w-[75vw] md:w-auto flex-none snap-center md:mt-12">
             <ProjectCard
               project={PROJECTS[4]}
               index={4}
@@ -219,7 +219,7 @@ export function Projects() {
           </div>
 
           {/* Card 6: Vertical */}
-          <div className="md:mt-0">
+          <div className="w-[75vw] md:w-auto flex-none snap-center md:mt-0">
             <ProjectCard
               project={PROJECTS[5]}
               index={5}

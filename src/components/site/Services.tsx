@@ -86,7 +86,7 @@ function ServiceCard({ service, index }: ServiceCardProps) {
         y: -6,
         transition: { duration: 0.3, ease: "easeOut" },
       }}
-      className="group relative h-full rounded-[2rem] p-[1.5px] overflow-hidden bg-border transition-all duration-300"
+      className="group relative h-full rounded-[2rem] p-[1.5px] overflow-hidden bg-border transition-all duration-300 w-[85vw] md:w-full flex-none snap-center"
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
@@ -162,8 +162,8 @@ export function Services() {
           </p>
         </div>
 
-        {/* Services Grid */}
-        <div className="grid grid-cols-1 min-[400px]:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Services Grid (Horizontal scroll on mobile, Grid on desktop) */}
+        <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-6 lg:grid lg:grid-cols-3 lg:gap-6 lg:pb-0 scrollbar-hide -mx-4 px-4 lg:mx-0 lg:px-0">
           {SERVICES.map((service, index) => (
             <ServiceCard key={service.number} service={service} index={index} />
           ))}
