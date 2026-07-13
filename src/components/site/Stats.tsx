@@ -69,7 +69,7 @@ function Counter({ to, suffix }: { to: number; suffix: string }) {
 
 export function Stats() {
   return (
-    <section className="relative hidden lg:block mt-36">
+    <section className="relative mt-20 lg:mt-36">
       <div className="container-px mx-auto max-w-7xl">
 
         {/* Section label */}
@@ -88,7 +88,7 @@ export function Stats() {
         </motion.div>
 
         {/* Stat cards grid */}
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
           {STATS.map((s, i) => {
             const Icon = s.icon;
             return (
@@ -175,7 +175,7 @@ export function Stats() {
             <div className="h-px flex-1 bg-gradient-to-l from-transparent via-border to-transparent" />
           </div>
 
-          <div className="flex items-center justify-center gap-10 flex-wrap">
+          <div className="flex items-center justify-center gap-x-6 gap-y-3 lg:gap-10 flex-wrap">
             {BRANDS.map((brand, i) => (
               <motion.div
                 key={brand}

@@ -412,13 +412,13 @@ export function About() {
             </h2>
           </div>
 
-          {/* Portrait — short aspect */}
+          {/* Portrait — vertical aspect (prevention from cut off) */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="relative rounded-2xl overflow-hidden border border-border aspect-[16/9] w-full"
+            className="relative rounded-2xl overflow-hidden border border-border aspect-[3/4] w-full max-w-[340px] mx-auto"
           >
             <img
               src={portrait}

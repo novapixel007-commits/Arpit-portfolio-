@@ -180,6 +180,17 @@ function MacBookMockup({
   mouseY: ReturnType<typeof useMotionValue>;
   prefersReducedMotion?: boolean;
 }) {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const isTouch = window.matchMedia("(pointer: coarse)").matches || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      setIsMobile(isTouch);
+      setIsPlaying(!isTouch);
+    }
+  }, []);
+
   const laptopX = useSpring(useTransform(mouseX, [-0.5, 0.5], prefersReducedMotion ? [0, 0] : [-8, 8]), { stiffness: 60, damping: 20 });
   const laptopY = useSpring(useTransform(mouseY, [-0.5, 0.5], prefersReducedMotion ? [0, 0] : [-6, 6]), { stiffness: 60, damping: 20 });
 
@@ -300,23 +311,47 @@ function MacBookMockup({
             }}
           >
             {/* Screen Content */}
-            <div className="relative w-full h-full bg-black flex items-center justify-center overflow-hidden">
-              <iframe
-                src="https://www.youtube.com/embed/4fFSQCw_SOA?autoplay=1&mute=1&loop=1&playlist=4fFSQCw_SOA&controls=0&modestbranding=1&showinfo=0&rel=0&disablekb=1&playsinline=1&iv_load_policy=3&fs=0&cc_load_policy=0&enablejsapi=0"
-                allow="autoplay; encrypted-media; picture-in-picture"
-                className="absolute pointer-events-none"
-                style={{
-                  border: "none",
-                  width: "116%",
-                  height: "116%",
-                  position: "absolute",
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-                }}
-                title="Cinematic reel preview"
-                loading="eager"
-              />
+            <div 
+              onClick={() => { if (!isPlaying) setIsPlaying(true); }}
+              className={`relative w-full h-full bg-black flex items-center justify-center overflow-hidden ${!isPlaying ? "cursor-pointer" : ""}`}
+            >
+              {isPlaying ? (
+                <iframe
+                  src="https://www.youtube.com/embed/4fFSQCw_SOA?autoplay=1&mute=1&loop=1&playlist=4fFSQCw_SOA&controls=0&modestbranding=1&showinfo=0&rel=0&disablekb=1&playsinline=1&iv_load_policy=3&fs=0&cc_load_policy=0&enablejsapi=0"
+                  allow="autoplay; encrypted-media; picture-in-picture"
+                  className="absolute pointer-events-none"
+                  style={{
+                    border: "none",
+                    width: "116%",
+                    height: "116%",
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                  }}
+                  title="Cinematic reel preview"
+                  loading="eager"
+                />
+              ) : (
+                <div className="absolute inset-0 size-full flex items-center justify-center">
+                  <img
+                    src="https://img.youtube.com/vi/4fFSQCw_SOA/maxresdefault.jpg"
+                    alt="Play Cinematic Reel"
+                    className="absolute inset-0 size-full object-cover brightness-[0.75]"
+                    loading="eager"
+                  />
+                  {/* Glowing glassmorphic play button */}
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/25">
+                    <motion.div
+                      animate={{ scale: [1, 1.06, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className="size-14 rounded-full bg-white/10 border border-white/35 backdrop-blur-sm flex items-center justify-center shadow-lg"
+                    >
+                      <Play className="size-5 fill-white text-white translate-x-[1px]" />
+                    </motion.div>
+                  </div>
+                </div>
+              )}
               
               {/* Screen soft ambient glow reflection */}
               <div
@@ -523,113 +558,20 @@ export function Hero() {
       {/* ── CONTENT ──────────────────────────────────────────────────────── */}
       <div className="container-px mx-auto w-full max-w-7xl relative z-10">
 
-        {/* ══ MOBILE ══ (hidden lg+) ═══════════════════════════════════════ */}
-        <div className="flex flex-col lg:hidden">
-          {/* Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1, ease }}
-            className="inline-flex self-start items-center gap-2 rounded-full border border-border bg-surface/80 backdrop-blur-sm px-3 py-1 text-[10px] font-mono uppercase tracking-widest text-[#6EE7FF]"
-          >
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#6EE7FF] opacity-75" />
-              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#6EE7FF]" />
-            </span>
-            Resolve Editor & Motion Designer
-          </motion.div>
+        {/* Responsive layout container: stacks vertically below xl, splits side-by-side above xl */}
+        <div className="grid grid-cols-1 xl:grid-cols-[1.1fr_1.35fr] items-center gap-12 lg:gap-16 xl:gap-20 pt-4 lg:pt-10">
 
-          {/* Headline */}
-          <h1 className="intro-hero-text mt-3 font-display text-[40px] font-semibold leading-[0.96] tracking-tighter text-foreground">
-            <LineReveal delay={0.2}>Cinematic videos</LineReveal>
-            <LineReveal delay={0.34}>that people</LineReveal>
-            <LineReveal
-              delay={0.48}
-              className="bg-gradient-to-r from-[#6EE7FF] to-[#8B7CFF] bg-clip-text text-transparent"
-            >
-              actually watch.
-            </LineReveal>
-          </h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.0, ease }}
-            className="mt-3 text-[13px] leading-snug text-muted-foreground max-w-[88%]"
-          >
-            I create cinematic video edits, motion graphics and commercial content that help
-            founders, creators and brands capture attention and increase retention.
-          </motion.p>
-
-          {/* CTAs */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.15, ease }}
-            className="mt-5 flex items-center gap-2"
-          >
-            <a
-              href="#work"
-              className="inline-flex items-center justify-center h-10 rounded-full bg-foreground px-5 text-[11px] font-semibold text-background transition-all duration-300 hover:scale-[1.04] hover:shadow-[0_0_22px_rgba(110,231,255,0.3)] active:scale-[0.97]"
-            >
-              View Portfolio
-            </a>
-            <a
-              href="#contact"
-              className="inline-flex items-center justify-center h-10 rounded-full border border-border bg-surface/80 backdrop-blur-sm px-5 text-[11px] font-semibold text-foreground transition-all duration-300 hover:scale-[1.04] hover:border-[#6EE7FF]/40 active:scale-[0.97]"
-            >
-              Book a Call
-            </a>
-          </motion.div>
-
-          {/* Trust */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 1.35, ease }}
-            className="mt-4 flex flex-col gap-1.5"
-          >
-            {TRUST.map((t) => (
-              <span key={t.label} className="flex items-center gap-1.5 text-[10px] text-muted-foreground/70 uppercase tracking-wider">
-                <CheckCircle2 className="size-3 text-[#6EE7FF] shrink-0" />
-                {t.label}
-              </span>
-            ))}
-          </motion.div>
-
-          {/* Stats strip */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.5, ease }}
-            className="mt-5 grid grid-cols-4 divide-x divide-border rounded-2xl border border-border bg-surface/60 backdrop-blur-sm"
-          >
-            {STATS.map((s) => (
-              <div key={s.label} className="flex flex-col items-center justify-center py-3">
-                <div className="text-[17px] leading-none">
-                  <MobileCounter to={s.value} suffix={s.suffix} />
-                </div>
-                <div className="mt-0.5 text-[8px] uppercase tracking-wider text-muted-foreground">{s.label}</div>
-              </div>
-            ))}
-          </motion.div>
-        </div>
-
-        {/* ══ DESKTOP ══ (hidden below lg) ══════════════════════════════════ */}
-        {/* Changed grid layout columns ratio from 1fr_1.05fr to 1fr_1.35fr to make laptop 30-40% wider and visual focal point */}
-        <div className="hidden lg:grid grid-cols-[1fr_1.35fr] items-center gap-16 xl:gap-20">
-
-          {/* Left — typography */}
+          {/* Left Column (Typography) */}
           <motion.div
             style={{ y: textY, opacity: textOpacity }}
-            className="intro-hero-text flex flex-col items-start text-left will-change-transform pr-4"
+            className="intro-hero-text flex flex-col items-center xl:items-start text-center xl:text-left will-change-transform"
           >
             {/* Badge */}
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.1, ease }}
-              className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/80 backdrop-blur-sm px-4 py-1.5 text-[11px] font-mono uppercase tracking-widest text-[#6EE7FF]"
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/80 backdrop-blur-sm px-4 py-1.5 text-[10px] lg:text-[11px] font-mono uppercase tracking-widest text-[#6EE7FF]"
             >
               <span className="relative flex h-1.5 w-1.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#6EE7FF] opacity-75" />
@@ -639,7 +581,7 @@ export function Hero() {
             </motion.div>
 
             {/* Headline — line-by-line reveal */}
-            <h1 className="mt-6 font-display text-[clamp(2.8rem,5vw,5rem)] font-bold leading-[0.96] tracking-tighter text-foreground">
+            <h1 className="mt-5 lg:mt-6 font-display text-[36px] sm:text-[46px] lg:text-[clamp(2.8rem,5vw,5rem)] font-bold leading-[0.96] tracking-tighter text-foreground">
               <LineReveal delay={0.22}>Cinematic videos</LineReveal>
               <LineReveal delay={0.36}>that people</LineReveal>
               <LineReveal
@@ -655,7 +597,7 @@ export function Hero() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: 1.1, ease }}
-              className="mt-6 max-w-[440px] text-[15.5px] leading-relaxed text-muted-foreground"
+              className="mt-5 lg:mt-6 max-w-[480px] text-[13.5px] lg:text-[15.5px] leading-relaxed text-muted-foreground"
             >
               I create cinematic video edits, motion graphics and commercial content
               that help founders, creators and brands capture attention and increase retention.
@@ -666,11 +608,11 @@ export function Hero() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: 1.28, ease }}
-              className="mt-7 flex flex-wrap items-center gap-3"
+              className="mt-6 lg:mt-7 flex flex-wrap items-center justify-center xl:justify-start gap-3"
             >
               <MagneticButton
                 href="#work"
-                className="group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-foreground px-8 py-3.5 text-[13px] font-semibold text-background transition-shadow duration-300 hover:shadow-[0_0_32px_rgba(110,231,255,0.35)]"
+                className="group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-foreground px-6 lg:px-8 py-3 lg:py-3.5 text-[12px] lg:text-[13px] font-semibold text-background transition-shadow duration-300 hover:shadow-[0_0_32px_rgba(110,231,255,0.35)]"
               >
                 <span className="relative z-10">View Portfolio</span>
                 <span className="absolute inset-0 -translate-x-full skew-x-[-18deg] bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:translate-x-full transition-transform duration-600 ease-out" />
@@ -678,7 +620,7 @@ export function Hero() {
 
               <MagneticButton
                 href="#contact"
-                className="group relative inline-flex items-center justify-center overflow-hidden rounded-full border border-border bg-surface/80 backdrop-blur-sm px-8 py-3.5 text-[13px] font-semibold text-foreground transition-all duration-300 hover:border-[#6EE7FF]/40 hover:shadow-[0_0_24px_rgba(110,231,255,0.12)]"
+                className="group relative inline-flex items-center justify-center overflow-hidden rounded-full border border-border bg-surface/80 backdrop-blur-sm px-6 lg:px-8 py-3 lg:py-3.5 text-[12px] lg:text-[13px] font-semibold text-foreground transition-all duration-300 hover:border-[#6EE7FF]/40 hover:shadow-[0_0_24px_rgba(110,231,255,0.12)]"
               >
                 <span className="relative z-10">Book a Call</span>
                 <span className="absolute inset-0 -translate-x-full skew-x-[-18deg] bg-gradient-to-r from-transparent via-white/8 to-transparent group-hover:translate-x-full transition-transform duration-600 ease-out" />
@@ -690,7 +632,7 @@ export function Hero() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 1.5, ease }}
-              className="mt-6 flex flex-col gap-2"
+              className="mt-5 lg:mt-6 flex flex-col sm:flex-row xl:flex-col items-center xl:items-start gap-2.5 sm:gap-6 xl:gap-2"
             >
               {TRUST.map((t, i) => (
                 <motion.span
@@ -698,22 +640,22 @@ export function Hero() {
                   initial={{ opacity: 0, x: -8 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 1.55 + i * 0.08, duration: 0.5, ease }}
-                  className="flex items-center gap-2 text-[11.5px] text-muted-foreground/75 tracking-wide"
+                  className="flex items-center gap-2 text-[10.5px] lg:text-[11.5px] text-muted-foreground/75 tracking-wide uppercase font-mono"
                 >
-                  <CheckCircle2 className="size-3.5 text-[#6EE7FF] shrink-0" />
+                  <CheckCircle2 className="size-3 lg:size-3.5 text-[#6EE7FF] shrink-0" />
                   {t.label}
                 </motion.span>
               ))}
             </motion.div>
           </motion.div>
 
-          {/* Right — MacBook (Shifted slightly toward right edge using justify-self-end) */}
+          {/* Right Column (MacBook) — stacks below left col on mobile/tablet */}
           <motion.div
             style={{ y: imageY }}
-            initial={{ opacity: 0, y: 60, scale: 0.92 }}
+            initial={{ opacity: 0, y: 40, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 1.6, delay: 0.3, ease }}
-            className="intro-hero-image justify-self-end w-full select-none will-change-transform pl-4"
+            transition={{ duration: 1.2, delay: 0.3, ease }}
+            className="intro-hero-image w-full max-w-[580px] xl:max-w-none mx-auto justify-self-center xl:justify-self-end select-none will-change-transform pt-4 xl:pt-0"
           >
             <MacBookMockup
               rotateX={rotateX}
