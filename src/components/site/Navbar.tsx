@@ -20,11 +20,10 @@ import { useState, useEffect, useRef } from "react";
 import { Menu, X } from "lucide-react";
 
 const NAV = [
-  { label: "Work",     href: "#work"     },
-  { label: "Services", href: "#services" },
-  { label: "Process",  href: "#process"  },
-  { label: "About",    href: "#about"    },
-  { label: "Contact",  href: "#contact"  },
+  { label: "Work",    href: "#work"    },
+  { label: "Process", href: "#process" },
+  { label: "About",   href: "#about"   },
+  { label: "Contact", href: "#contact" },
 ];
 
 export function Navbar() {

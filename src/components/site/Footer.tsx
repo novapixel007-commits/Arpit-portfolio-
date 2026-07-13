@@ -11,7 +11,6 @@ export function Footer() {
 
         <nav className="flex flex-wrap gap-x-6 gap-y-2 text-[13px] text-muted-foreground">
           <a href="#work" className="hover:text-foreground">Work</a>
-          <a href="#services" className="hover:text-foreground">Services</a>
           <a href="#process" className="hover:text-foreground">Process</a>
           <a href="#about" className="hover:text-foreground">About</a>
           <a href="#contact" className="hover:text-foreground">Contact</a>
