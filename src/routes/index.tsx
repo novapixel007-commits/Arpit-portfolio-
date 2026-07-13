@@ -4,7 +4,7 @@ import React, { Suspense, lazy } from "react";
 import { Hero } from "@/components/site/Hero";
 import { ScrollProgress } from "@/components/site/ScrollProgress";
 import { IntroLoader } from "@/components/site/IntroLoader";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 
 // Lazy load below-the-fold sections for optimized initial bundle loading
 const Stats = lazy(() => import("@/components/site/Stats").then(m => ({ default: m.Stats })));
