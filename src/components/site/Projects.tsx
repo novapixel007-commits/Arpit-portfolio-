@@ -81,8 +81,7 @@ const HeroProjectCard = memo(function HeroProjectCard({
       className="w-full"
     >
       <div
-        className="group relative rounded-[2rem] border border-white/8 bg-card/30 overflow-hidden cursor-none select-none transition-all duration-400 hover:border-white/20 hover:shadow-lg"
-        style={{ height: "clamp(350px, 50vw, 640px)" }}
+        className="group relative rounded-[2rem] border border-white/8 bg-card/30 overflow-hidden cursor-none select-none transition-all duration-400 hover:border-white/20 hover:shadow-lg aspect-[16/9] w-full h-auto"
       >
         {/* Shine reflection sweep — disabled in prefersReducedMotion */}
         {!prefersReducedMotion && (
@@ -127,12 +126,11 @@ const HeroProjectCard = memo(function HeroProjectCard({
               allowFullScreen
               style={{
                 border: "none",
-                width: "116%",
-                height: "116%",
+                width: "100%",
+                height: "100%",
                 position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
+                top: "0",
+                left: "0",
               }}
               title={project.title}
               loading="lazy"
@@ -252,8 +250,7 @@ const VerticalProjectCard = memo(function VerticalProjectCard({
       className="w-full"
     >
       <div
-        className="group relative rounded-[2rem] border border-white/8 bg-card/30 overflow-hidden cursor-none select-none transition-all duration-400 hover:border-white/20 hover:shadow-lg"
-        style={{ height: "clamp(460px, 45vw, 560px)" }}
+        className="group relative rounded-[2rem] border border-white/8 bg-card/30 overflow-hidden cursor-none select-none transition-all duration-400 hover:border-white/20 hover:shadow-lg aspect-[9/16] w-full h-auto"
       >
         {/* Media */}
         <div className="absolute inset-0 size-full bg-black">
@@ -291,12 +288,12 @@ const VerticalProjectCard = memo(function VerticalProjectCard({
               allowFullScreen
               style={{
                 border: "none",
-                width: "116%",
-                height: "116%",
+                width: "316.5%",
+                height: "100%",
                 position: "absolute",
-                top: "50%",
+                top: "0",
                 left: "50%",
-                transform: "translate(-50%, -50%)",
+                transform: "translateX(-50%)",
               }}
               title={project.title}
               loading="lazy"
