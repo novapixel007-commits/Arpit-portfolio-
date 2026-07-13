@@ -242,9 +242,18 @@ html.lenis, html.lenis body {
 }
 
 @utility container-px {
-  padding-inline: 1.5rem;
+  padding-inline: 1rem;
+  @media (min-width: 640px) { padding-inline: 1.5rem; }
   @media (min-width: 768px) { padding-inline: 3rem; }
   @media (min-width: 1280px) { padding-inline: 5rem; }
+}
+
+@utility scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 @utility heading-display {

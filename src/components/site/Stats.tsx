@@ -33,9 +33,9 @@ function Counter({ to, suffix }: { to: number; suffix: string }) {
 
 export function Stats() {
   return (
-    <section className="relative mt-4 lg:mt-44">
+    <section className="relative hidden lg:block mt-44">
       <div className="container-px mx-auto max-w-7xl">
-        <div className="grid grid-cols-2 gap-3 rounded-3xl hairline bg-surface px-4 py-4 lg:gap-y-10 lg:px-6 lg:py-12 md:grid-cols-4 md:gap-0 md:px-12 md:py-14">
+        <div className="grid grid-cols-4 gap-0 rounded-3xl hairline bg-surface px-6 py-12 md:px-12 md:py-14">
           {STATS.map((s, i) => (
             <motion.div
               key={s.label}
@@ -43,12 +43,12 @@ export function Stats() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.6, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-              className={`flex flex-col justify-center h-[56px] lg:h-auto text-center md:text-left ${i !== 0 ? "md:border-l md:border-hairline md:pl-12" : ""}`}
+              className={`flex flex-col justify-center h-auto text-left ${i !== 0 ? "border-l border-hairline pl-12" : ""}`}
             >
-              <div className="heading-display text-3xl lg:text-5xl md:text-6xl font-medium">
+              <div className="heading-display text-5xl md:text-6xl font-medium">
                 <Counter to={s.value} suffix={s.suffix} />
               </div>
-              <div className="mt-0.5 lg:mt-3 text-[10px] lg:text-[13px] text-muted-foreground uppercase tracking-wider">{s.label}</div>
+              <div className="mt-3 text-[13px] text-muted-foreground">{s.label}</div>
             </motion.div>
           ))}
         </div>
@@ -58,12 +58,12 @@ export function Stats() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 1 }}
-          className="mt-8 lg:mt-14"
+          className="mt-14"
         >
           <p className="text-center text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
             Trusted by teams building the next chapter
           </p>
-          <div className="mt-7 grid grid-cols-3 items-center gap-6 opacity-60 md:grid-cols-7">
+          <div className="mt-7 grid grid-cols-7 items-center gap-6 opacity-60">
             {LOGOS.map((l) => (
               <div
                 key={l}

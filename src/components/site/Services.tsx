@@ -148,28 +148,55 @@ function ServiceCard({ service, index }: ServiceCardProps) {
 
 export function Services() {
   return (
-    <section id="services" className="relative mt-14 py-14 lg:mt-24 lg:py-16 scroll-mt-24 md:mt-36">
-      <div className="container-px mx-auto max-w-7xl">
-        
-        {/* Section Header */}
+    <section id="services" className="relative mt-10 lg:mt-24 scroll-mt-24">
+      {/* ══════════════════
+          MOBILE LAYOUT
+      ══════════════════ */}
+      <div className="lg:hidden container-px mx-auto">
+        <div className="mb-4">
+          <p className="text-[9px] font-mono uppercase tracking-[0.2em] text-muted-foreground">capabilities</p>
+          <h2 className="mt-1 font-display text-[24px] font-medium leading-[1.1] tracking-tighter text-foreground">
+            focused workflows,<br />premium results.
+          </h2>
+        </div>
+        <div className="grid grid-cols-2 gap-2 mt-4">
+          {SERVICES.map((service, index) => (
+            <motion.div
+              key={service.title}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.5, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
+              className="rounded-2xl border border-border bg-card p-4 flex flex-col"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <service.icon className="size-4 text-[#6EE7FF]" strokeWidth={1.5} />
+                <span className="font-mono text-[9px] tracking-wider text-muted-foreground">{service.number}</span>
+              </div>
+              <h3 className="font-display text-[13px] font-semibold text-foreground leading-tight">{service.title}</h3>
+              <p className="text-[11px] leading-snug text-muted-foreground mt-1 line-clamp-3">{service.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      {/* ══════════════════
+          DESKTOP LAYOUT
+      ══════════════════ */}
+      <div className="hidden lg:block container-px mx-auto max-w-7xl">
         <div className="flex flex-col items-start justify-between gap-8 border-b border-border pb-12 mb-16 md:flex-row md:items-end">
-            <CinematicHeading 
-              tagline="capabilities" 
-              text="focused workflows, premium results." 
-            />
+          <CinematicHeading tagline="capabilities" text="focused workflows, premium results." />
           <p className="text-[15px] leading-relaxed text-muted-foreground max-w-sm md:ml-auto text-left">
             No bloated studio structures. Directly partnering with creators, agencies and brands using standard finishing technologies inside Resolve.
           </p>
         </div>
-
-        {/* Services Grid (Horizontal scroll on mobile, Grid on desktop) */}
-        <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-6 lg:grid lg:grid-cols-3 lg:gap-6 lg:pb-0 scrollbar-hide -mx-4 px-4 lg:mx-0 lg:px-0">
+        <div className="grid grid-cols-3 gap-6">
           {SERVICES.map((service, index) => (
             <ServiceCard key={service.number} service={service} index={index} />
           ))}
         </div>
-
       </div>
+
     </section>
   );
 }

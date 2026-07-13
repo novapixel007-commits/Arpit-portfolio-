@@ -196,17 +196,19 @@ export function Contact() {
   }
 
   return (
-    <section id="contact" className="relative mt-6 py-8 lg:mt-24 lg:py-16 scroll-mt-24 md:mt-36">
+    <section id="contact" className="relative mt-10 py-0 lg:mt-24 lg:py-16 scroll-mt-24">
       <div className="container-px mx-auto max-w-7xl">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-16 items-start">
 
           {/* Left Column: Info (5 cols) */}
-          <div className="lg:col-span-5 text-left space-y-4 lg:space-y-10">
-            <CinematicHeading
-              tagline="get in touch"
-              text="let's build something real."
-            />
-            <p className="mt-6 max-w-md text-[15px] leading-relaxed text-muted-foreground">
+          <div className="lg:col-span-5 text-left space-y-3 lg:space-y-10">
+            <div>
+              <p className="text-[9px] lg:text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground">get in touch</p>
+              <h2 className="mt-1 font-display text-[26px] lg:text-[clamp(2rem,4vw,3.5rem)] font-medium leading-[1.1] tracking-tighter text-foreground">
+                let's build something real.
+              </h2>
+            </div>
+            <p className="text-[13px] lg:text-[15px] leading-snug lg:leading-relaxed text-muted-foreground max-w-md">
               Currently taking on select projects for Q3. Share your timeline and creative brief, and I'll respond within 24 hours.
             </p>
 
@@ -256,7 +258,7 @@ export function Contact() {
           </div>
 
           {/* Right Column: Form (7 cols) */}
-          <div className="lg:col-span-7 bg-card border border-border rounded-[1.5rem] lg:rounded-[2rem] p-5 md:p-12 shadow-soft hover:shadow-[0_0_30px_rgba(110,231,255,0.02)] transition-shadow duration-500">
+          <div className="lg:col-span-7 bg-card border border-border rounded-xl lg:rounded-[2rem] p-4 lg:p-12 shadow-soft">
             <AnimatePresence mode="wait">
               {!submitted ? (
                 <motion.form
@@ -264,7 +266,7 @@ export function Contact() {
                   ref={formRef}
                   exit={{ opacity: 0, y: -10 }}
                   onSubmit={onSubmit}
-                  className="space-y-6 md:space-y-8"
+                  className="space-y-4 lg:space-y-8"
                   noValidate
                   aria-label="Contact form"
                 >

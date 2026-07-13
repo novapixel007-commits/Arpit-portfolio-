@@ -153,21 +153,20 @@ export function Projects() {
   const [playingId, setPlayingId] = useState<number | null>(null);
 
   return (
-    <section id="work" className="relative mt-6 py-8 lg:mt-24 lg:py-20 scroll-mt-24 md:mt-36">
+    <section id="work" className="relative mt-10 lg:mt-24 scroll-mt-24">
       <div className="container-px mx-auto max-w-7xl">
-        {/* Magazine Section Header */}
-        <div className="grid grid-cols-1 md:grid-cols-[1.2fr_0.8fr] gap-4 lg:gap-8 items-end border-b border-border pb-4 mb-6 lg:pb-12 lg:mb-16">
-            <CinematicHeading 
-              tagline="selected films" 
-              text="editorial cuts, cinematic finishing." 
-            />
-          <p className="text-[15px] leading-relaxed text-muted-foreground max-w-sm md:ml-auto">
-            A curated showcase of commercials, talking heads, and high-impact launch sequences. Each project is crafted with storyboarded intent.
-          </p>
+        {/* Section Header */}
+        <div className="container-px mx-auto max-w-7xl">
+          <div className="pb-4 mb-4 lg:pb-12 lg:mb-16 border-b border-border">
+            <p className="text-[9px] lg:text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground mb-1">selected films</p>
+            <h2 className="font-display text-[24px] lg:text-[clamp(2rem,4vw,3.5rem)] font-medium leading-[1.1] tracking-tighter text-foreground">
+              editorial cuts, cinematic finishing.
+            </h2>
+          </div>
         </div>
 
-        {/* Asymmetric Magazine Poster Layout Grid — exactly 6 cards */}
-        <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-6 md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-8 lg:gap-y-14 items-start -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide">
+        {/* MOBILE: horizontal snap scroll track */}
+        <div className="flex overflow-x-auto snap-x snap-mandatory gap-3 pb-6 lg:hidden px-4 scrollbar-hide">
           {/* Card 1: Horizontal */}
           <div className="w-[85vw] md:w-auto flex-none snap-center md:col-span-2">
             <ProjectCard
@@ -199,7 +198,7 @@ export function Projects() {
           </div>
 
           {/* Card 4: Horizontal */}
-          <div className="w-[85vw] md:w-auto flex-none snap-center md:col-span-2 md:py-8">
+          <div className="w-[85vw] flex-none snap-center">
             <ProjectCard
               project={PROJECTS[3]}
               index={3}
@@ -208,8 +207,8 @@ export function Projects() {
             />
           </div>
 
-          {/* Card 5: Vertical (offset top) */}
-          <div className="w-[75vw] md:w-auto flex-none snap-center md:mt-12">
+          {/* Card 5: Vertical */}
+          <div className="w-[75vw] flex-none snap-center">
             <ProjectCard
               project={PROJECTS[4]}
               index={4}
@@ -219,7 +218,7 @@ export function Projects() {
           </div>
 
           {/* Card 6: Vertical */}
-          <div className="w-[75vw] md:w-auto flex-none snap-center md:mt-0">
+          <div className="w-[75vw] flex-none snap-center">
             <ProjectCard
               project={PROJECTS[5]}
               index={5}
@@ -228,6 +227,29 @@ export function Projects() {
             />
           </div>
         </div>
+
+        {/* DESKTOP: original asymmetric masonry grid */}
+        <div className="hidden lg:grid container-px mx-auto max-w-7xl grid-cols-2 gap-x-8 gap-y-14 items-start mt-16">
+          <div className="col-span-2">
+            <ProjectCard project={PROJECTS[0]} index={0} isPlaying={playingId === PROJECTS[0].id} onPlay={() => setPlayingId(PROJECTS[0].id)} />
+          </div>
+          <div className="mt-12">
+            <ProjectCard project={PROJECTS[1]} index={1} isPlaying={playingId === PROJECTS[1].id} onPlay={() => setPlayingId(PROJECTS[1].id)} />
+          </div>
+          <div>
+            <ProjectCard project={PROJECTS[2]} index={2} isPlaying={playingId === PROJECTS[2].id} onPlay={() => setPlayingId(PROJECTS[2].id)} />
+          </div>
+          <div className="col-span-2 py-8">
+            <ProjectCard project={PROJECTS[3]} index={3} isPlaying={playingId === PROJECTS[3].id} onPlay={() => setPlayingId(PROJECTS[3].id)} />
+          </div>
+          <div className="mt-12">
+            <ProjectCard project={PROJECTS[4]} index={4} isPlaying={playingId === PROJECTS[4].id} onPlay={() => setPlayingId(PROJECTS[4].id)} />
+          </div>
+          <div>
+            <ProjectCard project={PROJECTS[5]} index={5} isPlaying={playingId === PROJECTS[5].id} onPlay={() => setPlayingId(PROJECTS[5].id)} />
+          </div>
+        </div>
+
       </div>
     </section>
   );
