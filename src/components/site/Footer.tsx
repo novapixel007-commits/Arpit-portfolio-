@@ -1,7 +1,7 @@
 export function Footer() {
   return (
-    <footer className="mt-24 border-t border-hairline">
-      <div className="container-px mx-auto flex max-w-7xl flex-col items-start justify-between gap-8 py-12 md:flex-row md:items-center">
+    <footer className="mt-14 lg:mt-24 border-t border-hairline">
+      <div className="container-px mx-auto flex max-w-7xl flex-col items-start justify-between gap-6 lg:gap-8 py-8 lg:py-12 md:flex-row md:items-center">
         <div className="flex items-center gap-2">
           <span className="inline-block size-2 rounded-full bg-foreground" />
           <span className="font-display text-[15px] font-semibold tracking-tight">

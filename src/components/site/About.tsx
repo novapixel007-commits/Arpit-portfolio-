@@ -48,7 +48,7 @@ export function About() {
   }, [mouseX, mouseY]);
 
   return (
-    <section id="about" className="relative mt-12 py-10 lg:mt-24 lg:py-16 scroll-mt-24 md:mt-36">
+    <section id="about" className="relative mt-14 py-14 lg:mt-24 lg:py-16 scroll-mt-24 md:mt-36">
       <div className="container-px mx-auto max-w-7xl">
         {/* Main Spread Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
@@ -96,14 +96,15 @@ export function About() {
                     className="flex flex-col sm:flex-row sm:justify-between items-start gap-2"
                   >
                     <div>
-                      <span className="font-mono text-[11px] text-muted-foreground uppercase tracking-widest">
+                      <span className="font-mono text-[10px] lg:text-[11px] text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
+                        <span className="inline-block size-1 lg:size-1.5 rounded-full bg-[#8B7CFF]" />
                         {item.year}
                       </span>
-                      <h4 className="font-display text-[15px] font-medium text-foreground mt-1">
+                      <h4 className="font-display text-[16px] lg:text-[15px] font-medium text-foreground mt-1">
                         {item.role}
                       </h4>
                     </div>
-                    <span className="text-[13px] text-muted-foreground mt-1 sm:mt-0 sm:text-right">
+                    <span className="text-[14px] lg:text-[13px] text-muted-foreground mt-1 sm:mt-0 sm:text-right">
                       {item.company}
                     </span>
                   </motion.div>
@@ -120,7 +121,7 @@ export function About() {
                 text="timing isn't just edits — timing is emotion." 
               />
 
-              <div className="mt-8 space-y-6 text-[15.5px] leading-relaxed text-muted-foreground">
+              <div className="mt-6 lg:mt-8 space-y-4 lg:space-y-6 text-[15.5px] leading-relaxed text-muted-foreground max-w-[92%] lg:max-w-full">
                 <p>
                   A premium video production is built on dynamic structure. Combining color grading, audio composition, and vector motion animation under a single DaVinci Resolve finishers timeline removes overhead and scope drift.
                 </p>
@@ -135,7 +136,7 @@ export function About() {
               <h3 className="font-display text-xs uppercase tracking-[0.2em] text-[#8B7CFF] font-semibold">
                 Editorial Values
               </h3>
-              <div className="grid grid-cols-1 min-[430px]:grid-cols-2 gap-4 lg:gap-8 mt-4 lg:mt-6">
+              <div className="grid grid-cols-1 min-[375px]:grid-cols-2 gap-4 lg:gap-8 mt-4 lg:mt-6">
                 {VALUES.map((val, idx) => (
                   <motion.div
                     key={val.k}
@@ -170,7 +171,7 @@ export function About() {
                     viewport={{ once: true }}
                     transition={{ duration: 0.6, delay: idx * 0.08 }}
                     whileHover={{ borderColor: "rgba(110, 231, 255, 0.4)", y: -3 }}
-                    className="flex-1 min-w-[130px] lg:min-w-[140px] rounded-xl border border-border bg-card p-3 lg:p-5 flex flex-col justify-between transition-all duration-300 hover:shadow-[0_0_20px_rgba(110,231,255,0.03)] cursor-default"
+                    className="flex-1 min-w-[130px] lg:min-w-[140px] max-h-[150px] lg:max-h-none rounded-xl border border-border bg-card p-5 flex flex-col justify-between transition-all duration-300 hover:shadow-[0_0_20px_rgba(110,231,255,0.03)] cursor-default"
                   >
                     <span className="font-display text-[14px] font-semibold text-foreground">
                       {tech.name}

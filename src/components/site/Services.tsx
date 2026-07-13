@@ -96,7 +96,7 @@ function ServiceCard({ service, index }: ServiceCardProps) {
           : "rgba(255, 255, 255, 0.08)",
       }}
     >
-      <div className="relative h-full rounded-[2rem] bg-card p-8 flex flex-col justify-between overflow-hidden">
+      <div className="relative h-full rounded-[2rem] bg-card p-5 lg:p-8 flex flex-col justify-between overflow-hidden">
         {/* Spotlight coordinates highlight */}
         {isHovering && (
           <div
@@ -148,7 +148,7 @@ function ServiceCard({ service, index }: ServiceCardProps) {
 
 export function Services() {
   return (
-    <section id="services" className="relative mt-24 py-16 scroll-mt-24 md:mt-36">
+    <section id="services" className="relative mt-14 py-14 lg:mt-24 lg:py-16 scroll-mt-24 md:mt-36">
       <div className="container-px mx-auto max-w-7xl">
         
         {/* Section Header */}
@@ -163,7 +163,7 @@ export function Services() {
         </div>
 
         {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 min-[400px]:grid-cols-2 lg:grid-cols-3 gap-6">
           {SERVICES.map((service, index) => (
             <ServiceCard key={service.number} service={service} index={index} />
           ))}

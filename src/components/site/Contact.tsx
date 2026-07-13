@@ -196,12 +196,12 @@ export function Contact() {
   }
 
   return (
-    <section id="contact" className="relative mt-12 py-12 lg:mt-24 lg:py-16 scroll-mt-24 md:mt-36">
+    <section id="contact" className="relative mt-14 py-14 lg:mt-24 lg:py-16 scroll-mt-24 md:mt-36">
       <div className="container-px mx-auto max-w-7xl">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
 
           {/* Left Column: Info (5 cols) */}
-          <div className="lg:col-span-5 text-left space-y-10">
+          <div className="lg:col-span-5 text-left space-y-6 lg:space-y-10">
             <CinematicHeading
               tagline="get in touch"
               text="let's build something real."
@@ -484,7 +484,7 @@ export function Contact() {
                       onMouseLeave={handleBtnMouseLeave}
                       style={{ x: springX, y: springY }}
                       aria-disabled={sending}
-                      className="btn-premium bg-foreground px-8 py-4 text-[13.5px] font-semibold text-background will-change-transform inline-flex items-center gap-2.5 disabled:opacity-70 disabled:cursor-not-allowed"
+                      className="btn-premium w-full lg:w-auto justify-center bg-foreground px-8 py-4 text-[13.5px] font-semibold text-background will-change-transform inline-flex items-center gap-2.5 disabled:opacity-70 disabled:cursor-not-allowed"
                     >
                       {sending ? (
                         <>

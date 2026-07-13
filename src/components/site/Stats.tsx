@@ -33,9 +33,9 @@ function Counter({ to, suffix }: { to: number; suffix: string }) {
 
 export function Stats() {
   return (
-    <section className="relative mt-32 md:mt-44">
+    <section className="relative mt-8 md:mt-44">
       <div className="container-px mx-auto max-w-7xl">
-        <div className="grid grid-cols-2 gap-y-8 rounded-3xl hairline bg-surface px-4 py-8 lg:gap-y-10 lg:px-6 lg:py-12 md:grid-cols-4 md:gap-0 md:px-12 md:py-14">
+        <div className="grid grid-cols-2 gap-4 rounded-3xl hairline bg-surface px-4 py-6 lg:gap-y-10 lg:px-6 lg:py-12 md:grid-cols-4 md:gap-0 md:px-12 md:py-14">
           {STATS.map((s, i) => (
             <motion.div
               key={s.label}
@@ -43,12 +43,12 @@ export function Stats() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.6, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-              className={`text-center md:text-left ${i !== 0 ? "md:border-l md:border-hairline md:pl-12" : ""}`}
+              className={`flex flex-col justify-center h-[70px] lg:h-auto text-center md:text-left ${i !== 0 ? "md:border-l md:border-hairline md:pl-12" : ""}`}
             >
-              <div className="heading-display text-5xl font-medium md:text-6xl">
+              <div className="heading-display text-4xl lg:text-5xl md:text-6xl font-medium">
                 <Counter to={s.value} suffix={s.suffix} />
               </div>
-              <div className="mt-3 text-[13px] text-muted-foreground">{s.label}</div>
+              <div className="mt-1 lg:mt-3 text-[11px] lg:text-[13px] text-muted-foreground">{s.label}</div>
             </motion.div>
           ))}
         </div>
