@@ -43,6 +43,15 @@ function Index() {
   const [showSsrOverlay, setShowSsrOverlay] = useState(true);
   const pageRef = useRef<HTMLDivElement | null>(null);
 
+  // Failsafe: Force reveal website after 2.8s maximum to guarantee it never gets stuck blank
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIntroActive(false);
+      setShowSsrOverlay(false);
+    }, 2800);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div className="relative min-h-screen overflow-x-hidden">
       {/* SSR black overlay to prevent hydration flashes on first-visit */}

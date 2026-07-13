@@ -219,7 +219,13 @@ export function IntroLoader({ pageRef, onComplete }: IntroLoaderProps) {
       );
     });
 
-    return () => ctx.revert();
+    return () => {
+      if (pageRef.current) {
+        pageRef.current.style.clipPath = "none";
+        pageRef.current.style.opacity = "1";
+      }
+      ctx.revert();
+    };
   }, [pageRef, onComplete]);
 
   // Keep it pure premium black (#050505)
