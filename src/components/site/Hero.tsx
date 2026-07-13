@@ -584,11 +584,10 @@ export function Hero() {
             <h1 className="mt-5 lg:mt-6 font-display text-[36px] sm:text-[46px] lg:text-[clamp(2.8rem,5vw,5rem)] font-bold leading-[0.96] tracking-tighter text-foreground">
               <LineReveal delay={0.22}>Cinematic videos</LineReveal>
               <LineReveal delay={0.36}>that people</LineReveal>
-              <LineReveal
-                delay={0.50}
-                className="bg-gradient-to-r from-[#6EE7FF] via-[#8B7CFF] to-[#6EE7FF] bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient"
-              >
-                actually watch.
+              <LineReveal delay={0.50}>
+                <span className="bg-gradient-to-r from-[#6EE7FF] via-[#8B7CFF] to-[#6EE7FF] bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
+                  actually watch.
+                </span>
               </LineReveal>
             </h1>
 
