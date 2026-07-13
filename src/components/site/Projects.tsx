@@ -138,7 +138,7 @@ const HeroProjectCard = memo(function HeroProjectCard({
           )}
 
           {/* Bottom vignette */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent pointer-events-none z-10" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent pointer-events-none z-10" />
         </div>
 
         {/* Play trigger overlay */}
@@ -162,39 +162,46 @@ const HeroProjectCard = memo(function HeroProjectCard({
             </motion.div>
           </button>
         )}
+      </div>
 
-        {/* Details Overlay */}
-        <div className="absolute bottom-6 left-6 right-6 lg:bottom-10 lg:left-10 lg:right-10 z-20 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 pointer-events-none">
-          <div className="text-left space-y-2">
+      {/* Details below the frame */}
+      <div className="mt-5 flex flex-col md:flex-row md:items-end md:justify-between gap-4 text-left">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-mono uppercase tracking-widest text-[#6EE7FF] bg-[#6EE7FF]/10 border border-[#6EE7FF]/20">
               <Film className="size-3" />
               {project.category}
             </span>
-            <h3 className="font-display font-bold text-[24px] lg:text-[2.2rem] text-white leading-tight tracking-tight">
-              {project.title}
-            </h3>
-            
-            <div className="flex items-center gap-6 pt-1 text-white/50 text-[11px] font-mono">
-              <div>
-                <span className="text-white/30 mr-1.5">YEAR:</span>
-                <span className="text-white/80">{meta.year}</span>
-              </div>
-              <div>
-                <span className="text-white/30 mr-1.5">LENGTH:</span>
-                <span className="text-white/80">{meta.duration}</span>
-              </div>
-              <div>
-                <span className="text-white/30 mr-1.5">ROLE:</span>
-                <span className="text-white/80 uppercase">{meta.role}</span>
-              </div>
+          </div>
+          <h3 className="font-display font-bold text-[22px] md:text-[1.8rem] text-foreground leading-tight tracking-tight">
+            {project.title}
+          </h3>
+          
+          <div className="flex flex-wrap items-center gap-y-1 gap-x-5 text-muted-foreground text-[11.5px] font-mono">
+            <div>
+              <span className="opacity-40 mr-1.5">YEAR:</span>
+              <span className="text-foreground/90 font-medium">{meta.year}</span>
+            </div>
+            <div className="hidden sm:inline text-muted-foreground/30">•</div>
+            <div>
+              <span className="opacity-40 mr-1.5">LENGTH:</span>
+              <span className="text-foreground/90 font-medium">{meta.duration}</span>
+            </div>
+            <div className="hidden sm:inline text-muted-foreground/30">•</div>
+            <div>
+              <span className="opacity-40 mr-1.5">ROLE:</span>
+              <span className="text-foreground/90 font-medium uppercase">{meta.role}</span>
             </div>
           </div>
-
-          <div className="flex items-center gap-2 text-white/70 font-mono text-[12px] uppercase tracking-wider self-start lg:self-auto group-hover:text-white transition-colors duration-300">
-            <span>View Project</span>
-            <ArrowUpRight className="size-4" />
-          </div>
         </div>
+
+        <a
+          href="#contact"
+          className="inline-flex items-center gap-2 text-muted-foreground hover:text-[#6EE7FF] font-mono text-[12px] uppercase tracking-wider transition-colors duration-300 self-start md:self-auto"
+        >
+          <span>View Project</span>
+          <ArrowUpRight className="size-4" />
+        </a>
       </div>
     </motion.div>
   );
@@ -320,22 +327,26 @@ const VerticalProjectCard = memo(function VerticalProjectCard({
           </button>
         )}
 
-        {/* Content Overlay */}
-        <div className="absolute bottom-6 left-6 right-6 z-20 flex flex-col items-start gap-1 text-left pointer-events-none">
-          <span className="font-mono text-[9px] uppercase tracking-wider text-[#8B7CFF]">
-            {project.category} · {meta.role}
-          </span>
-          <h3 className="font-display font-semibold text-[19px] text-white leading-tight transition-transform duration-300 group-hover:-translate-y-1">
-            {project.title}
-          </h3>
-          <div className="flex items-center gap-1.5 text-white/50 text-[10.5px] font-mono mt-1">
-            <span>{meta.duration}</span>
-            <span>·</span>
-            <div className="flex items-center gap-1">
-              <span>View Project</span>
-              <ArrowUpRight className="size-3" />
-            </div>
-          </div>
+      </div>
+
+      {/* Details below the frame */}
+      <div className="mt-4 space-y-1.5 text-left">
+        <span className="font-mono text-[9.5px] uppercase tracking-wider text-[#8B7CFF] block">
+          {project.category} · {meta.role}
+        </span>
+        <h3 className="font-display font-semibold text-[18px] text-foreground leading-tight">
+          {project.title}
+        </h3>
+        <div className="flex items-center gap-2 text-muted-foreground text-[11px] font-mono">
+          <span>{meta.duration}</span>
+          <span>·</span>
+          <a
+            href="#contact"
+            className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors duration-300"
+          >
+            <span>View Project</span>
+            <ArrowUpRight className="size-3" />
+          </a>
         </div>
       </div>
     </motion.div>
