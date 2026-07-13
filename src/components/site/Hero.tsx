@@ -298,9 +298,12 @@ function MacBookMockup({
                 className="absolute pointer-events-none"
                 style={{
                   border: "none",
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
+                  width: "116%",
+                  height: "116%",
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
                 }}
                 title="Cinematic reel preview"
                 loading="eager"
@@ -358,13 +361,6 @@ function MacBookMockup({
           />
         </div>
       </motion.div>
-
-      {/* ── Centered Play Control Overlay (clean, centered, low opacity until hover) ── */}
-      <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
-        <div className="size-16 rounded-full bg-black/40 border border-white/10 backdrop-blur-md flex items-center justify-center opacity-30 hover:opacity-100 transition-opacity duration-300 pointer-events-auto cursor-pointer">
-          <Play className="size-5 fill-white text-white translate-x-[1px]" />
-        </div>
-      </div>
     </div>
   );
 }
