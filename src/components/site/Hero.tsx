@@ -19,6 +19,14 @@ const TRUST = [
   { label: "Cinematic Editing & Motion Graphics" },
 ];
 
+const FLOATING_TAGS = [
+  "DaVinci Resolve",
+  "Motion Graphics",
+  "Color Grading",
+  "4K • 60fps",
+  "Commercial Ads"
+];
+
 const STATS = [
   { value: 100, suffix: "+", label: "Projects" },
   { value: 5, suffix: "+", label: "Brands" },
@@ -646,6 +654,24 @@ export function Hero() {
                 </motion.span>
               ))}
             </motion.div>
+
+            {/* Badges on mobile/tablet — hidden on desktop (xl+) */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 1.6, ease }}
+              className="xl:hidden flex flex-wrap justify-center gap-1.5 mt-6 max-w-[440px] mx-auto"
+            >
+              {FLOATING_TAGS.map((tag) => (
+                <div
+                  key={tag}
+                  className="flex items-center gap-1.5 whitespace-nowrap rounded-[10px] border border-white/8 bg-[#0f121c]/45 px-3 py-1.5 text-[9.5px] font-mono text-white/85 shadow-sm"
+                >
+                  <span className="size-1.5 rounded-full bg-[#6EE7FF] inline-block shrink-0 shadow-[0_0_4px_#6EE7FF]" />
+                  {tag}
+                </div>
+              ))}
+            </motion.div>
           </motion.div>
 
           {/* Right Column (MacBook) — stacks below left col on mobile/tablet */}
@@ -654,7 +680,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 40, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 1.2, delay: 0.3, ease }}
-            className="intro-hero-image w-full max-w-[580px] xl:max-w-none mx-auto justify-self-center xl:justify-self-end select-none will-change-transform pt-4 xl:pt-0"
+            className="intro-hero-image w-full max-w-[580px] xl:max-w-none mx-auto justify-self-center xl:justify-self-end select-none will-change-transform mt-10 xl:mt-0 pt-4 xl:pt-0"
           >
             <MacBookMockup
               rotateX={rotateX}

@@ -62,7 +62,7 @@ export function Testimonials() {
       <div className="container-px mx-auto max-w-6xl relative z-10">
 
         {/* Header row */}
-        <div className="flex items-end justify-between gap-6">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
             {/* Animated top line */}
             <motion.div
@@ -82,7 +82,7 @@ export function Testimonials() {
           </div>
 
           {/* Premium nav buttons */}
-          <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="flex items-center gap-2 flex-shrink-0 self-start sm:self-auto">
             <motion.button
               aria-label="Previous testimonial"
               onClick={prev}
@@ -136,7 +136,7 @@ export function Testimonials() {
               }}
             />
 
-            <div className="relative z-10 p-8 md:p-14">
+            <div className="relative z-10 p-6 md:p-14">
               {/* Large animated quotation mark */}
               <motion.div
                 initial={{ scale: 0.5, opacity: 0 }}

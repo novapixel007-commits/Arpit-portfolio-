@@ -134,7 +134,7 @@ export function Stats() {
                 {/* Number */}
                 <div>
                   <div
-                    className="font-display text-[3.2rem] font-semibold leading-none tracking-tighter"
+                    className="font-display text-[2.2rem] sm:text-[3.2rem] font-semibold leading-none tracking-tighter"
                     style={{
                       background: `linear-gradient(135deg, #fff 30%, ${s.color} 100%)`,
                       WebkitBackgroundClip: "text",
