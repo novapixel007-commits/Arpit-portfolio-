@@ -120,8 +120,8 @@ const HeroProjectCard = memo(function HeroProjectCard({
           {/* Mount YouTube iframe only when card is visible and actively playing */}
           {isCardInView && isYouTube && isPlaying && (
             <iframe
-              src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&playsinline=1&controls=0&modestbranding=1&rel=0&fs=1&iv_load_policy=3&cc_load_policy=0&disablekb=0`}
-              className="absolute pointer-events-none"
+              src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=0&playsinline=1&controls=1&modestbranding=0&rel=0&fs=1`}
+              className="absolute pointer-events-auto z-40"
               allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
               allowFullScreen
               style={{
@@ -289,18 +289,17 @@ const VerticalProjectCard = memo(function VerticalProjectCard({
           {/* Mount YouTube iframe only when card is visible and actively playing */}
           {isCardInView && isYouTube && isPlaying && (
             <iframe
-              src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&playsinline=1&controls=0&modestbranding=1&rel=0&fs=1&iv_load_policy=3&cc_load_policy=0&disablekb=0`}
-              className="absolute pointer-events-none"
+              src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=0&playsinline=1&controls=1&modestbranding=0&rel=0&fs=1`}
+              className="absolute pointer-events-auto z-40"
               allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
               allowFullScreen
               style={{
                 border: "none",
-                width: "316.5%",
+                width: "100%",
                 height: "100%",
                 position: "absolute",
                 top: "0",
-                left: "50%",
-                transform: "translateX(-50%)",
+                left: "0",
               }}
               title={project.title}
               loading="lazy"
